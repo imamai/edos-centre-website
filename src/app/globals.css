@@ -1,0 +1,199 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Google Fonts loaded via next/font ─────────────────────────────────────── */
+
+@layer base {
+  :root {
+    --font-inter: 'Inter', system-ui, sans-serif;
+    --font-plus-jakarta: 'Plus Jakarta Sans', system-ui, sans-serif;
+    --font-jetbrains-mono: 'JetBrains Mono', monospace;
+
+    /* Brand tokens */
+    --brand-red:    227 30 36;
+    --brand-purple: 46  35  79;
+    --brand-navy:   26  23  51;
+    --brand-accent: 107 91 149;
+
+    /* Spacing scale */
+    --section-padding-y: 6rem;
+    --section-padding-x: 1.5rem;
+  }
+
+  * { box-sizing: border-box; }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-[#F8F9FB] text-[#1A1733] font-sans;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight;
+  }
+
+  ::selection {
+    background: rgba(227, 30, 36, 0.2);
+    color: #1A1733;
+  }
+}
+
+@layer components {
+  /* ── Section wrapper ─────────────────────────────────────── */
+  .section-container {
+    @apply max-w-7xl mx-auto px-6 lg:px-8;
+  }
+
+  /* ── Dark section (hero, cta) ───────────────────────────── */
+  .section-dark {
+    @apply bg-brand-navy text-white;
+  }
+
+  /* ── Light section ──────────────────────────────────────── */
+  .section-light {
+    @apply bg-brand-muted text-brand-navy;
+  }
+
+  /* ── Section headings ───────────────────────────────────── */
+  .section-eyebrow {
+    @apply inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest
+           text-brand-red mb-4;
+  }
+
+  .section-heading {
+    @apply font-display text-display-md font-bold text-balance;
+  }
+
+  .section-subheading {
+    @apply text-lg text-gray-500 max-w-2xl text-balance leading-relaxed;
+  }
+
+  /* ── Gradient text ──────────────────────────────────────── */
+  .gradient-text {
+    @apply bg-gradient-to-r from-brand-red to-red-400 bg-clip-text text-transparent;
+  }
+
+  .gradient-text-purple {
+    @apply bg-gradient-to-r from-brand-accent-purple to-purple-400 bg-clip-text text-transparent;
+  }
+
+  /* ── Button variants ────────────────────────────────────── */
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-6 py-3 rounded-full
+           bg-brand-red text-white font-semibold text-sm
+           transition-all duration-200 hover:brightness-110 hover:shadow-glow-red
+           active:scale-[0.98] cursor-pointer border-0;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center gap-2 px-6 py-3 rounded-full
+           border border-white/20 text-white font-semibold text-sm
+           bg-white/5 backdrop-blur-sm
+           transition-all duration-200 hover:bg-white/10 hover:border-white/40
+           active:scale-[0.98] cursor-pointer;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center gap-2 px-6 py-3 rounded-full
+           border border-brand-purple text-brand-purple font-semibold text-sm
+           transition-all duration-200 hover:bg-brand-purple hover:text-white
+           active:scale-[0.98] cursor-pointer;
+  }
+
+  /* ── Cards ──────────────────────────────────────────────── */
+  .card-glass {
+    @apply rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md;
+  }
+
+  .card-enterprise {
+    @apply rounded-2xl border border-gray-200 bg-white shadow-card
+           transition-all duration-300 hover:shadow-card-hover hover:-translate-y-1;
+  }
+
+  .card-dark {
+    @apply rounded-2xl border border-white/8 bg-white/4 backdrop-blur-sm
+           transition-all duration-300 hover:border-brand-red/30 hover:bg-white/6;
+  }
+
+  /* ── Badge / tag ────────────────────────────────────────── */
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium;
+  }
+
+  .badge-red {
+    @apply badge bg-brand-red/10 text-brand-red;
+  }
+
+  .badge-purple {
+    @apply badge bg-brand-accent-purple/10 text-brand-accent-purple;
+  }
+
+  .badge-dark {
+    @apply badge bg-white/10 text-white/80;
+  }
+
+  /* ── Data flow animation track ──────────────────────────── */
+  .flow-track {
+    @apply relative overflow-hidden;
+  }
+
+  .flow-track::after {
+    content: '';
+    @apply absolute inset-0 bg-shimmer animate-shimmer;
+    background-size: 200% 100%;
+  }
+
+  /* ── Animated node ──────────────────────────────────────── */
+  .eco-node {
+    @apply relative rounded-2xl border p-4
+           transition-all duration-300 cursor-default;
+  }
+
+  .eco-node:hover {
+    @apply border-brand-red/50 shadow-glow-red scale-105;
+  }
+
+  /* ── Scrollbar ──────────────────────────────────────────── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { @apply bg-brand-accent-purple/30 rounded-full; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-brand-accent-purple/60; }
+}
+
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+  .text-pretty  { text-wrap: pretty; }
+
+  /* Delay helpers for staggered animations */
+  .delay-75  { animation-delay: 75ms; }
+  .delay-150 { animation-delay: 150ms; }
+  .delay-200 { animation-delay: 200ms; }
+  .delay-300 { animation-delay: 300ms; }
+  .delay-500 { animation-delay: 500ms; }
+  .delay-700 { animation-delay: 700ms; }
+  .delay-900 { animation-delay: 900ms; }
+
+  /* Opacity fill state for slide-up */
+  .opacity-initial { opacity: 0; }
+  .opacity-visible { opacity: 1; }
+
+  /* Grid pattern overlay */
+  .bg-grid {
+    background-image:
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  /* Dot pattern */
+  .bg-dots {
+    background-image: radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+}
