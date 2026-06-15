@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import EdosLogoMark from "@/components/ui/EdosLogoMark";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Menu, X, ChevronDown, ArrowRight } from "lucide-react";
@@ -219,26 +220,5 @@ export default function Navbar() {
 }
 
 function EdosLogo({ dark }: { dark: boolean }) {
-  return (
-    <div className="flex items-center gap-2">
-      {/* Icon mark – simplified C+ shape from logo */}
-      <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="32" height="32" rx="8" fill="#E31E24" />
-        <path
-          d="M21 10.5C19.5 9 17.5 8 15 8C10.6 8 7 11.6 7 16C7 20.4 10.6 24 15 24C17.5 24 19.5 23 21 21.5"
-          stroke="white" strokeWidth="2.5" strokeLinecap="round" fill="none"
-        />
-        <path d="M22 13H25M23.5 11.5V14.5" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
-      </svg>
-      <div>
-        <div className={cn("font-display font-bold text-base leading-none tracking-tight", dark ? "text-brand-navy" : "text-white")}>
-          <span className={dark ? "text-brand-purple" : "text-white"}>edos</span>
-          <span className="text-brand-red"> centre</span>
-        </div>
-        <div className={cn("text-[9px] uppercase tracking-widest leading-none mt-0.5", dark ? "text-gray-400" : "text-white/60")}>
-          Embrace Data
-        </div>
-      </div>
-    </div>
-  );
+  return <EdosLogoMark dark={dark} />;
 }

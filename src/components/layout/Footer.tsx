@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Mail, Phone, MapPin, Linkedin, Twitter, Github } from "lucide-react";
+import EdosLogoMark from "@/components/ui/EdosLogoMark";
 import NewsletterForm from "./NewsletterForm";
 
 const SOLUTIONS = [
@@ -52,21 +53,8 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
           {/* Brand col */}
           <div className="lg:col-span-2">
-            <div className="flex items-center gap-2 mb-5">
-              <svg width="36" height="36" viewBox="0 0 32 32" fill="none">
-                <rect width="32" height="32" rx="8" fill="#E31E24" />
-                <path d="M21 10.5C19.5 9 17.5 8 15 8C10.6 8 7 11.6 7 16C7 20.4 10.6 24 15 24C17.5 24 19.5 23 21 21.5" stroke="white" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-                <path d="M22 13H25M23.5 11.5V14.5" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
-              </svg>
-              <div>
-                <div className="font-display font-bold text-lg leading-none">
-                  <span className="text-white">edos</span>
-                  <span className="text-brand-red"> centre</span>
-                </div>
-                <div className="text-[9px] text-white/40 uppercase tracking-widest mt-0.5">
-                  Embrace Data for Optimum Solutions
-                </div>
-              </div>
+            <div className="mb-5">
+              <EdosLogoMark dark={false} />
             </div>
 
             <p className="text-white/60 text-sm leading-relaxed max-w-xs mb-6">
