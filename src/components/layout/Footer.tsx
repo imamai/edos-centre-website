@@ -67,13 +67,13 @@ export default function Footer() {
                 <MapPin className="w-4 h-4 text-brand-red shrink-0" />
                 Nairobi, Kenya — Serving East Africa
               </div>
-              <a href="mailto:hello@edoscentre.com" className="flex items-center gap-3 text-white/60 hover:text-white transition-colors">
+              <a href="mailto:info@edoscentre.co.ke" className="flex items-center gap-3 text-white/60 hover:text-white transition-colors">
                 <Mail className="w-4 h-4 text-brand-red shrink-0" />
-                hello@edoscentre.com
+                info@edoscentre.co.ke
               </a>
-              <a href="tel:+254700000000" className="flex items-center gap-3 text-white/60 hover:text-white transition-colors">
+              <a href="tel:+254721201287" className="flex items-center gap-3 text-white/60 hover:text-white transition-colors">
                 <Phone className="w-4 h-4 text-brand-red shrink-0" />
-                +254 700 000 000
+                +254 721 201 287
               </a>
             </div>
 
