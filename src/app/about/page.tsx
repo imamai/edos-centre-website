@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, Target, Eye, Heart } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -191,11 +192,29 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Partners placeholder */}
-      <section className="py-16 bg-brand-muted border-t border-gray-100">
-        <div className="section-container text-center">
-          <div className="section-eyebrow mb-6">Partners &amp; Clients</div>
-          <p className="text-gray-400 text-sm italic">Client and partner logos coming soon.</p>
+      {/* Partners & Clients */}
+      <section className="py-20 bg-brand-muted border-t border-gray-100">
+        <div className="section-container">
+          <div className="text-center mb-12">
+            <div className="section-eyebrow mb-3">Partners &amp; Clients</div>
+            <h2 className="section-heading text-brand-navy">Trusted by organisations across East Africa</h2>
+          </div>
+          <div className="flex flex-wrap justify-center items-center gap-16">
+            <Image
+              src="/partner-Tunu Consulting hub.png"
+              alt="TUNU Consulting Hub"
+              width={180}
+              height={70}
+              className="h-16 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300"
+            />
+            <Image
+              src="/partner-Mejasan Media Production.jpg"
+              alt="Mejasan Media Production"
+              width={220}
+              height={70}
+              className="h-16 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300"
+            />
+          </div>
         </div>
       </section>
 

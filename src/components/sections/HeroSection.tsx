@@ -189,9 +189,7 @@ export default function HeroSection() {
                 <span className="block">
                   Optimum{" "}
                   <span className="relative inline-block">
-                    <span className="gradient-text">
-                      <AnimatedWord words={WORDS} active={activeWord} />
-                    </span>
+                    <AnimatedWord words={WORDS} active={activeWord} wordClassName="gradient-text" />
                   </span>
                 </span>
               </motion.h1>
@@ -277,13 +275,13 @@ export default function HeroSection() {
   );
 }
 
-function AnimatedWord({ words, active }: { words: string[]; active: number }) {
+function AnimatedWord({ words, active, wordClassName = "" }: { words: string[]; active: number; wordClassName?: string }) {
   return (
     <span className="relative inline-block overflow-hidden" style={{ minWidth: "7ch" }}>
       {words.map((word, i) => (
         <motion.span
           key={word}
-          className="absolute inset-0"
+          className={`absolute inset-0 ${wordClassName}`}
           initial={false}
           animate={{
             y: i === active ? 0 : i < active ? "-100%" : "100%",
