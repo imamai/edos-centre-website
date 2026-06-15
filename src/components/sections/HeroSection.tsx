@@ -61,7 +61,7 @@ function EcosystemViz() {
     <div className="relative w-full h-full">
       <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
         {/* Connection lines */}
-        {CONNECTIONS.map(({ from, to }) => {
+        {CONNECTIONS.map(({ from, to }, i) => {
           const a = nodeMap[from];
           const b = nodeMap[to];
           return (
@@ -76,7 +76,7 @@ function EcosystemViz() {
               <DataParticle
                 x1={a.x} y1={a.y}
                 x2={b.x} y2={b.y}
-                delay={Math.random() * 3}
+                delay={i * 0.35}
               />
             </g>
           );

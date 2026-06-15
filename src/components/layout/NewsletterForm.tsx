@@ -1,22 +1,26 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowRight, Loader2, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 
 export default function NewsletterForm() {
-  const [status, setStatus] = useState<"idle" | "loading" | "success">("idle");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [email, setEmail] = useState("");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!email) return;
     setStatus("loading");
-    await fetch("/api/newsletter", {
-      method:  "POST",
-      headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify({ email, source: "footer" }),
-    });
-    setStatus("success");
+    try {
+      const res = await fetch("/api/newsletter", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ email, source: "footer" }),
+      });
+      setStatus(res.ok ? "success" : "error");
+    } catch {
+      setStatus("error");
+    }
   }
 
   if (status === "success") {
@@ -24,6 +28,15 @@ export default function NewsletterForm() {
       <div className="flex items-center gap-2 text-white/70">
         <CheckCircle2 className="w-5 h-5 text-green-400" />
         <span className="text-sm">You&apos;re subscribed! Check your email.</span>
+      </div>
+    );
+  }
+
+  if (status === "error") {
+    return (
+      <div className="flex items-center gap-2 text-white/70">
+        <AlertCircle className="w-5 h-5 text-brand-red" />
+        <span className="text-sm">Something went wrong — please try again or email us directly.</span>
       </div>
     );
   }

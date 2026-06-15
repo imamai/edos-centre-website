@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, BarChart3, Globe, LayoutDashboard, Smartphone, Monitor, ClipboardList, Activity, Link2, Cpu } from "lucide-react";
+import { ArrowRight, BarChart3, Globe, Cloud, LayoutDashboard, Smartphone, Monitor, ClipboardList, Activity, Link2, Cpu } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Solutions & Services",
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 const SERVICES = [
   { slug: "data-analytics",         icon: BarChart3,    title: "Data Analytics",              tagline: "Business intelligence & insight platforms",      color: "#E31E24" },
   { slug: "data-engineering",       icon: Cpu,          title: "Data Engineering",            tagline: "ETL, warehouses & data lakes",                   color: "#E31E24" },
-  { slug: "saas-platforms",         icon: Globe,        title: "SaaS Platforms",              tagline: "Multi-tenant cloud applications",                 color: "#2E234F" },
+  { slug: "saas-platforms",         icon: Cloud,        title: "SaaS Platforms",              tagline: "Multi-tenant cloud applications",                 color: "#2E234F" },
   { slug: "dashboard-development",  icon: LayoutDashboard, title: "Dashboard Development",    tagline: "Operational & strategic dashboards",             color: "#6B5B95" },
   { slug: "web-development",        icon: Globe,        title: "Web Development",             tagline: "Enterprise-grade web applications",              color: "#2E234F" },
   { slug: "mobile-applications",    icon: Smartphone,   title: "Mobile Applications",         tagline: "Cross-platform iOS & Android apps",              color: "#2E234F" },
@@ -24,7 +24,7 @@ export default function ServicesPage() {
   return (
     <>
       {/* Hero */}
-      <section className="pt-32 pb-20 bg-gradient-hero">
+      <section className="pt-32 pb-20 bg-gradient-hero relative overflow-hidden">
         <div className="absolute inset-0 bg-grid opacity-30" />
         <div className="section-container relative text-center">
           <div className="section-eyebrow justify-center text-brand-red mb-4">

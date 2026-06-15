@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Mail, Phone, MapPin, Clock } from "lucide-react";
+import { Mail, Phone, MapPin, Clock, MessageCircle } from "lucide-react";
 import ContactForm from "@/components/forms/ContactForm";
 
 export const metadata: Metadata = {
@@ -34,10 +34,11 @@ export default function ContactPage() {
                 <h2 className="font-display font-bold text-2xl text-brand-navy mb-6">Contact information</h2>
                 <div className="space-y-4">
                   {[
-                    { icon: Mail,    label: "Email",    value: "hello@edoscentre.com", href: "mailto:hello@edoscentre.com" },
-                    { icon: Phone,   label: "Phone",    value: "+254 700 000 000",     href: "tel:+254700000000" },
-                    { icon: MapPin,  label: "Location", value: "Nairobi, Kenya",       href: null },
-                    { icon: Clock,   label: "Hours",    value: "Mon–Fri, 8am–6pm EAT", href: null },
+                    { icon: Mail,           label: "Email",     value: "info@edoscentre.co.ke",  href: "mailto:info@edoscentre.co.ke" },
+                    { icon: Phone,          label: "Phone",     value: "+254 721 201 287",        href: "tel:+254721201287" },
+                    { icon: MessageCircle,  label: "WhatsApp",  value: "+254 721 201 287",        href: "https://wa.me/254721201287" },
+                    { icon: MapPin,         label: "Location",  value: "Nairobi, Kenya",          href: null },
+                    { icon: Clock,          label: "Hours",     value: "Mon–Fri, 8am–6pm EAT",   href: null },
                   ].map((c) => {
                     const Icon = c.icon;
                     const content = (
