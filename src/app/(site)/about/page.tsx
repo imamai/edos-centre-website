@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Target, Eye, Heart } from "lucide-react";
+import { getTeamMembers } from "@/lib/queries";
 
 export const metadata: Metadata = {
   title: "About Edos Centre",
@@ -36,20 +37,13 @@ const MVV = [
   },
 ];
 
-const TEAM = [
-  {
-    name: "Walter Imamai",
-    role: "Founder & Director, Digital Platforms and Data Engineering",
-    initials: "WI",
-  },
-  {
-    name: "Wilson Musyoki",
-    role: "Data Analytics Lead",
-    initials: "WM",
-  },
-];
+function initials(name: string): string {
+  return name.split(" ").map((n) => n[0]).slice(0, 2).join("");
+}
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const team = await getTeamMembers({ leadershipOnly: true });
+
   return (
     <>
       {/* Hero */}
@@ -176,16 +170,26 @@ export default function AboutPage() {
           </div>
 
           <div className="flex flex-wrap justify-center gap-8">
-            {TEAM.map((member) => (
+            {team.map((member) => (
               <div
-                key={member.name}
+                key={member.id}
                 className="card-enterprise p-8 text-center w-full max-w-xs"
               >
-                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-brand-red to-brand-purple flex items-center justify-center mx-auto mb-5">
-                  <span className="font-display font-bold text-xl text-white">{member.initials}</span>
-                </div>
-                <h3 className="font-display font-bold text-lg text-brand-navy mb-1">{member.name}</h3>
-                <p className="text-sm text-gray-500 leading-snug">{member.role}</p>
+                {member.photo_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={member.photo_url}
+                    alt={member.full_name}
+                    className="w-20 h-20 rounded-full object-cover mx-auto mb-5"
+                  />
+                ) : (
+                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-brand-red to-brand-purple flex items-center justify-center mx-auto mb-5">
+                    <span className="font-display font-bold text-xl text-white">{initials(member.full_name)}</span>
+                  </div>
+                )}
+                <h3 className="font-display font-bold text-lg text-brand-navy mb-1">{member.full_name}</h3>
+                <p className="text-sm text-gray-500 leading-snug">{member.job_title}</p>
+                {member.bio && <p className="text-xs text-gray-400 leading-relaxed mt-3">{member.bio}</p>}
               </div>
             ))}
           </div>
