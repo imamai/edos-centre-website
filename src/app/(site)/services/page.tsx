@@ -1,26 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, BarChart3, Globe, Cloud, LayoutDashboard, Smartphone, Monitor, ClipboardList, Activity, Link2, Cpu } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { getServices } from "@/lib/queries";
+import { getIcon, getServiceAccent } from "@/lib/icon-map";
 
 export const metadata: Metadata = {
   title: "Solutions & Services",
   description: "Explore Edos Centre's full suite of data analytics, data engineering, SaaS development, and digital transformation services.",
 };
 
-const SERVICES = [
-  { slug: "data-analytics",         icon: BarChart3,    title: "Data Analytics",              tagline: "Business intelligence & insight platforms",      color: "#E31E24" },
-  { slug: "data-engineering",       icon: Cpu,          title: "Data Engineering",            tagline: "ETL, warehouses & data lakes",                   color: "#E31E24" },
-  { slug: "saas-platforms",         icon: Cloud,        title: "SaaS Platforms",              tagline: "Multi-tenant cloud applications",                 color: "#2E234F" },
-  { slug: "dashboard-development",  icon: LayoutDashboard, title: "Dashboard Development",    tagline: "Operational & strategic dashboards",             color: "#6B5B95" },
-  { slug: "web-development",        icon: Globe,        title: "Web Development",             tagline: "Enterprise-grade web applications",              color: "#2E234F" },
-  { slug: "mobile-applications",    icon: Smartphone,   title: "Mobile Applications",         tagline: "Cross-platform iOS & Android apps",              color: "#2E234F" },
-  { slug: "desktop-systems",        icon: Monitor,      title: "Desktop Systems",             tagline: "Offline-first Windows applications",             color: "#6B5B95" },
-  { slug: "questionnaire-digitization", icon: ClipboardList, title: "Questionnaire Digitization", tagline: "ODK, KoboToolbox & SurveyCTO setup",         color: "#6B5B95" },
-  { slug: "monitoring-evaluation",  icon: Activity,     title: "M&E Systems",                 tagline: "Programme monitoring & results frameworks",      color: "#E31E24" },
-  { slug: "dhis2-integrations",     icon: Link2,        title: "DHIS2 Integrations",          tagline: "Health information system setup & APIs",         color: "#E31E24" },
-];
+export default async function ServicesPage() {
+  const services = await getServices();
 
-export default function ServicesPage() {
   return (
     <>
       {/* Hero */}
@@ -47,16 +38,17 @@ export default function ServicesPage() {
       <section className="py-20 bg-brand-muted">
         <div className="section-container">
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {SERVICES.map((s) => {
-              const Icon = s.icon;
+            {services.map((s) => {
+              const Icon = getIcon(s.icon);
+              const color = getServiceAccent(s.slug);
               return (
                 <Link
                   key={s.slug}
                   href={`/services/${s.slug}`}
                   className="group card-enterprise p-6 block"
                 >
-                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform" style={{ background: `${s.color}15` }}>
-                    <Icon className="w-6 h-6" style={{ color: s.color }} />
+                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform" style={{ background: `${color}15` }}>
+                    <Icon className="w-6 h-6" style={{ color }} />
                   </div>
                   <h2 className="font-display font-bold text-xl text-brand-navy mb-1 group-hover:text-brand-red transition-colors">{s.title}</h2>
                   <p className="text-sm text-gray-500 mb-4">{s.tagline}</p>

@@ -74,6 +74,7 @@ export async function getIndustriesAdmin() {
 
 export type ServiceWithRelations = Database["public"]["Tables"]["edoscentre_services"]["Row"] & {
   edoscentre_service_capabilities: Database["public"]["Tables"]["edoscentre_service_capabilities"]["Row"][];
+  edoscentre_service_outcomes: Database["public"]["Tables"]["edoscentre_service_outcomes"]["Row"][];
   edoscentre_service_technologies: { technology_id: string }[];
 };
 
@@ -81,7 +82,7 @@ export async function getServicesAdmin(): Promise<ServiceWithRelations[]> {
   const supabase = await createClient();
   const { data } = await supabase
     .from("edoscentre_services")
-    .select("*, edoscentre_service_capabilities(*), edoscentre_service_technologies(technology_id)")
+    .select("*, edoscentre_service_capabilities(*), edoscentre_service_outcomes(*), edoscentre_service_technologies(technology_id)")
     .order("sort_order");
   return (data ?? []) as unknown as ServiceWithRelations[];
 }

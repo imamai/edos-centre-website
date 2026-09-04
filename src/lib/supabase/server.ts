@@ -27,6 +27,21 @@ export async function createClient() {
 }
 
 /**
+ * Anon-key client with no cookie/session handling — safe to call from anywhere,
+ * including generateStaticParams and other build-time contexts where next/headers'
+ * cookies() throws (no request to read cookies from). Public content reads (services,
+ * blog, industries, etc.) never need a user session — RLS still applies, just as an
+ * anonymous visitor, identical to what createClient() would enforce for anon on these
+ * public-read tables.
+ */
+export function createStaticClient() {
+  return createSupabaseClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  );
+}
+
+/**
  * Stateless service-role client (bypasses RLS entirely). Deliberately NOT built on
  * @supabase/ssr's cookie-bound client — that wrapper is designed to act as the current
  * user, and even when handed the service-role key it can end up issuing requests under

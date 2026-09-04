@@ -8,8 +8,10 @@ import { upsertService, deleteService } from "@/lib/admin/actions/service-action
 import type { Database } from "@/types/database.types";
 
 type Capability = Database["public"]["Tables"]["edoscentre_service_capabilities"]["Row"];
+type Outcome = Database["public"]["Tables"]["edoscentre_service_outcomes"]["Row"];
 type Service = Database["public"]["Tables"]["edoscentre_services"]["Row"] & {
   edoscentre_service_capabilities: Capability[];
+  edoscentre_service_outcomes: Outcome[];
   edoscentre_service_technologies: { technology_id: string }[];
 };
 type Technology = Database["public"]["Tables"]["edoscentre_technologies"]["Row"];
@@ -67,6 +69,15 @@ export default function ServicesManager({ services, technologies }: { services: 
               name="capabilities"
               defaultValue={editing?.edoscentre_service_capabilities?.map((c) => c.capability).join("\n") ?? ""}
               className="min-h-[100px]"
+            />
+          </div>
+          <div>
+            <Label htmlFor="outcomes">Expected outcomes (one per line)</Label>
+            <Textarea
+              id="outcomes"
+              name="outcomes"
+              defaultValue={editing?.edoscentre_service_outcomes?.map((o) => o.outcome).join("\n") ?? ""}
+              className="min-h-[80px]"
             />
           </div>
           <div>

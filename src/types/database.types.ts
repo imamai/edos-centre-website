@@ -32,6 +32,12 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["edoscentre_service_capabilities"]["Insert"]>;
         Relationships: [];
       };
+      edoscentre_service_outcomes: {
+        Row: { id: string; service_id: string; outcome: string; sort_order: number };
+        Insert: Omit<Database["public"]["Tables"]["edoscentre_service_outcomes"]["Row"], "id"> & { id?: string };
+        Update: Partial<Database["public"]["Tables"]["edoscentre_service_outcomes"]["Insert"]>;
+        Relationships: [];
+      };
       edoscentre_service_technologies: {
         Row: { service_id: string; technology_id: string };
         Insert: Database["public"]["Tables"]["edoscentre_service_technologies"]["Row"];

@@ -19,6 +19,7 @@ const schema = z.object({
   seo_title: z.string().optional(),
   seo_description: z.string().optional(),
   capabilities: z.string().optional(),
+  outcomes: z.string().optional(),
   technology_ids: z.array(z.string()).default([]),
 });
 
@@ -66,6 +67,14 @@ export async function upsertService(formData: FormData, id?: string) {
   if (capabilities.length) {
     await supabase.from("edoscentre_service_capabilities").insert(
       capabilities.map((capability, i) => ({ service_id: serviceId!, capability, sort_order: i })),
+    );
+  }
+
+  await supabase.from("edoscentre_service_outcomes").delete().eq("service_id", serviceId!);
+  const outcomes = linesToList(parsed.outcomes);
+  if (outcomes.length) {
+    await supabase.from("edoscentre_service_outcomes").insert(
+      outcomes.map((outcome, i) => ({ service_id: serviceId!, outcome, sort_order: i })),
     );
   }
 
