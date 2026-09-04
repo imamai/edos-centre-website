@@ -176,6 +176,12 @@ export async function getClients() {
   return data ?? [];
 }
 
+export async function getClientPortalUsers() {
+  const supabase = await createClient();
+  const { data } = await supabase.from("edoscentreadmin_client_portal_users").select("*").order("created_at");
+  return data ?? [];
+}
+
 export async function getSubscriptionPlans() {
   const supabase = await createClient();
   const { data } = await supabase.from("edoscentreadmin_subscription_plans").select("*").order("sort_order");

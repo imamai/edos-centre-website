@@ -506,6 +506,22 @@ export interface Database {
         };
         Relationships: [];
       };
+      edoscentreadmin_client_portal_users: {
+        Row: {
+          id: string; client_id: string; email: string; full_name: string | null;
+          is_active: boolean; must_change_password: boolean; last_login_at: string | null;
+          created_at: string; updated_at: string;
+        };
+        Insert: {
+          id: string; client_id: string; email: string; full_name?: string | null;
+          is_active?: boolean; must_change_password?: boolean; last_login_at?: string | null;
+        };
+        Update: {
+          id?: string; client_id?: string; email?: string; full_name?: string | null;
+          is_active?: boolean; must_change_password?: boolean; last_login_at?: string | null;
+        };
+        Relationships: [];
+      };
       edoscentreadmin_notifications: {
         Row: {
           id: string; recipient_id: string; type: string; severity: string; title: string;
@@ -538,6 +554,7 @@ export interface Database {
     Functions: {
       edoscentreadmin_next_invoice_number: { Args: Record<string, never>; Returns: string };
       edoscentre_check_rate_limit: { Args: { p_key: string; p_limit: number; p_window_seconds: number }; Returns: boolean };
+      edoscentreadmin_current_client_id: { Args: Record<string, never>; Returns: string | null };
     };
     Enums: Record<string, never>;
   };
@@ -562,3 +579,5 @@ export type AdminWebsite   = Database["public"]["Tables"]["edoscentreadmin_websi
 export type AdminUserRow   = Database["public"]["Tables"]["edoscentreadmin_admin_users"]["Row"];
 export type AdminRole      = "super_admin" | "website_admin" | "content_editor";
 export type WebsiteStatus  = "active" | "trial" | "pending" | "suspended" | "maintenance" | "expired" | "archived";
+
+export type ClientPortalUserRow = Database["public"]["Tables"]["edoscentreadmin_client_portal_users"]["Row"];
