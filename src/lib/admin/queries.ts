@@ -290,6 +290,117 @@ export async function getSslCertificates(): Promise<SslCertificateWithRelations[
   return (data ?? []) as unknown as SslCertificateWithRelations[];
 }
 
+function lastNMonths(n: number): { key: string; label: string; start: Date; end: Date }[] {
+  const months: { key: string; label: string; start: Date; end: Date }[] = [];
+  const now = new Date();
+  for (let i = n - 1; i >= 0; i--) {
+    const start = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const end = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
+    months.push({
+      key: `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, "0")}`,
+      label: start.toLocaleDateString("en-US", { month: "short" }),
+      start,
+      end,
+    });
+  }
+  return months;
+}
+
+export async function getRevenueByMonth(monthsBack = 12) {
+  const supabase = await createClient();
+  const months = lastNMonths(monthsBack);
+  const { data } = await supabase
+    .from("edoscentreadmin_payments")
+    .select("amount, payment_date, status")
+    .eq("status", "completed")
+    .gte("payment_date", months[0].start.toISOString().slice(0, 10));
+
+  return months.map((m) => {
+    const total = (data ?? [])
+      .filter((p) => {
+        const d = new Date(p.payment_date);
+        return d >= m.start && d < m.end;
+      })
+      .reduce((sum, p) => sum + Number(p.amount), 0);
+    return { label: m.label, value: total };
+  });
+}
+
+export async function getLeadsByMonth(monthsBack = 12) {
+  const supabase = await createClient();
+  const months = lastNMonths(monthsBack);
+  const sinceStr = months[0].start.toISOString();
+
+  const [contact, consultation] = await Promise.all([
+    supabase.from("edoscentre_contact_inquiries").select("created_at").gte("created_at", sinceStr),
+    supabase.from("edoscentre_consultation_bookings").select("created_at").gte("created_at", sinceStr),
+  ]);
+  const combined = [...(contact.data ?? []), ...(consultation.data ?? [])];
+
+  return months.map((m) => {
+    const count = combined.filter((r) => {
+      const d = new Date(r.created_at);
+      return d >= m.start && d < m.end;
+    }).length;
+    return { label: m.label, value: count };
+  });
+}
+
+export async function getLeadsByType() {
+  const supabase = await createClient();
+  const { data } = await supabase.from("edoscentre_contact_inquiries").select("inquiry_type");
+  const counts = new Map<string, number>();
+  for (const row of data ?? []) {
+    counts.set(row.inquiry_type, (counts.get(row.inquiry_type) ?? 0) + 1);
+  }
+  const total = data?.length ?? 0;
+  return { items: [...counts.entries()].map(([label, count]) => ({ label, count })).sort((a, b) => b.count - a.count), total };
+}
+
+export async function getConsultationsByStatus() {
+  const supabase = await createClient();
+  const { data } = await supabase.from("edoscentre_consultation_bookings").select("status");
+  const counts = new Map<string, number>();
+  for (const row of data ?? []) {
+    counts.set(row.status, (counts.get(row.status) ?? 0) + 1);
+  }
+  const total = data?.length ?? 0;
+  return { items: [...counts.entries()].map(([label, count]) => ({ label, count })).sort((a, b) => b.count - a.count), total };
+}
+
+export async function getSubscriptionStatusBreakdown() {
+  const supabase = await createClient();
+  const { data } = await supabase.from("edoscentreadmin_subscriptions").select("status");
+  const counts = new Map<string, number>();
+  for (const row of data ?? []) {
+    counts.set(row.status, (counts.get(row.status) ?? 0) + 1);
+  }
+  const total = data?.length ?? 0;
+  return { items: [...counts.entries()].map(([label, count]) => ({ label, count })).sort((a, b) => b.count - a.count), total };
+}
+
+export async function getInvoiceStatusBreakdown() {
+  const supabase = await createClient();
+  const { data } = await supabase.from("edoscentreadmin_invoices").select("status, total");
+  const counts = new Map<string, number>();
+  for (const row of data ?? []) {
+    counts.set(row.status, (counts.get(row.status) ?? 0) + 1);
+  }
+  const total = data?.length ?? 0;
+  const totalBilled = (data ?? []).reduce((sum, r) => sum + Number(r.total), 0);
+  return { items: [...counts.entries()].map(([label, count]) => ({ label, count })).sort((a, b) => b.count - a.count), total, totalBilled };
+}
+
+export async function getTopBlogPosts(limit = 8) {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("edoscentre_blog_posts")
+    .select("id, slug, title, view_count, is_published")
+    .order("view_count", { ascending: false })
+    .limit(limit);
+  return data ?? [];
+}
+
 export async function getNotifications(recipientId: string, limit = 50) {
   const supabase = await createClient();
   const { data } = await supabase
