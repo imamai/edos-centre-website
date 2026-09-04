@@ -3,15 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { motion } from "framer-motion";
+import type { Database } from "@/types/database.types";
 
-const METRICS = [
-  { value: 50,  suffix: "+", label: "Projects Delivered",     desc: "Across East Africa" },
-  { value: 500, suffix: "M+", label: "Records Processed",     desc: "Monthly across all systems" },
-  { value: 20,  suffix: "+", label: "Organizations Served",   desc: "Government, NGO & enterprise" },
-  { value: 99.9, suffix: "%", label: "System Reliability",    desc: "SLA maintained" },
-  { value: 100, suffix: "+", label: "Dashboards Built",       desc: "Live and in production" },
-  { value: 7,   suffix: "",  label: "Industry Verticals",     desc: "Deep domain expertise" },
-];
+type Metric = Database["public"]["Tables"]["edoscentre_metrics"]["Row"];
 
 function CountUp({ target, suffix, inView }: { target: number; suffix: string; inView: boolean }) {
   const [count, setCount] = useState(0);
@@ -41,7 +35,7 @@ function CountUp({ target, suffix, inView }: { target: number; suffix: string; i
   );
 }
 
-export default function MetricsSection() {
+export default function MetricsSection({ metrics }: { metrics: Metric[] }) {
   const [ref, inView] = useInView({ triggerOnce: true, threshold: 0.2 });
 
   return (
@@ -69,9 +63,9 @@ export default function MetricsSection() {
 
         {/* Metrics grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6">
-          {METRICS.map((m, i) => (
+          {metrics.map((m, i) => (
             <motion.div
-              key={m.label}
+              key={m.id}
               initial={{ opacity: 0, y: 24 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: i * 0.1, duration: 0.5 }}
@@ -80,8 +74,8 @@ export default function MetricsSection() {
               <div className="font-display text-4xl lg:text-5xl font-black text-brand-navy mb-2" style={{ letterSpacing: "-0.03em" }}>
                 <CountUp target={m.value} suffix={m.suffix} inView={inView} />
               </div>
-              <div className="font-semibold text-sm text-brand-navy mb-1">{m.label}</div>
-              <div className="text-xs text-gray-400">{m.desc}</div>
+              <div className="font-semibold text-sm text-brand-navy mb-1">{m.sub_label}</div>
+              <div className="text-xs text-gray-400">{m.description}</div>
             </motion.div>
           ))}
         </div>

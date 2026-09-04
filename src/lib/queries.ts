@@ -160,14 +160,46 @@ export async function getTestimonials({ featured = false } = {}) {
 }
 
 // ── Platform Layers ───────────────────────────────────────────────────────────
-export async function getPlatformLayers() {
+export type PlatformLayerData = {
+  id: string;
+  layer_number: number;
+  name: string;
+  subtitle: string | null;
+  description: string | null;
+  example: string | null;
+  icon: string | null;
+  color_hex: string;
+  tools: string[];
+};
+
+type PlatformLayerRow = Database["public"]["Tables"]["edoscentre_platform_layers"]["Row"] & {
+  edoscentre_platform_layer_tools: (Database["public"]["Tables"]["edoscentre_platform_layer_tools"]["Row"] & {
+    edoscentre_technologies: { name: string } | null;
+  })[];
+};
+
+export async function getPlatformLayers(): Promise<PlatformLayerData[]> {
   const supabase = createStaticClient();
   const { data } = await supabase
     .from("edoscentre_platform_layers")
-    .select(`*, edoscentre_platform_layer_tools(*, edoscentre_technologies(*))`)
+    .select(`*, edoscentre_platform_layer_tools(*, edoscentre_technologies(name))`)
     .eq("is_active", true)
     .order("layer_number");
-  return data ?? [];
+
+  return ((data ?? []) as unknown as PlatformLayerRow[]).map((l) => ({
+    id: l.id,
+    layer_number: l.layer_number,
+    name: l.name,
+    subtitle: l.subtitle,
+    description: l.description,
+    example: l.example,
+    icon: l.icon,
+    color_hex: l.color_hex,
+    tools: [...l.edoscentre_platform_layer_tools]
+      .sort((a, b) => a.sort_order - b.sort_order)
+      .map((t) => t.custom_name ?? t.edoscentre_technologies?.name)
+      .filter((n): n is string => !!n),
+  }));
 }
 
 // ── Resources ─────────────────────────────────────────────────────────────────

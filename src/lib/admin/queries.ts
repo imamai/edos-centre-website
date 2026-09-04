@@ -106,6 +106,25 @@ export async function getIndustriesAdminFull(): Promise<IndustryWithRelations[]>
   return (data ?? []) as unknown as IndustryWithRelations[];
 }
 
+export async function getMetricsAdmin() {
+  const supabase = await createClient();
+  const { data } = await supabase.from("edoscentre_metrics").select("*").order("sort_order");
+  return data ?? [];
+}
+
+export type PlatformLayerWithTools = Database["public"]["Tables"]["edoscentre_platform_layers"]["Row"] & {
+  edoscentre_platform_layer_tools: Database["public"]["Tables"]["edoscentre_platform_layer_tools"]["Row"][];
+};
+
+export async function getPlatformLayersAdminFull(): Promise<PlatformLayerWithTools[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("edoscentre_platform_layers")
+    .select("*, edoscentre_platform_layer_tools(*)")
+    .order("layer_number");
+  return (data ?? []) as unknown as PlatformLayerWithTools[];
+}
+
 export type CaseStudyWithRelations = Database["public"]["Tables"]["edoscentre_case_studies"]["Row"] & {
   edoscentre_case_study_kpis: Database["public"]["Tables"]["edoscentre_case_study_kpis"]["Row"][];
   edoscentre_case_study_technologies: { technology_id: string }[];

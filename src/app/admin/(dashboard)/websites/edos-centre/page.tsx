@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ChevronRight, Sliders, Briefcase, Building2, FileBadge, Newspaper, Users, Quote, HelpCircle, Menu as MenuIcon, Image as ImageIcon, Mail } from "lucide-react";
+import { ChevronRight, Sliders, Briefcase, Building2, FileBadge, Newspaper, Users, Quote, HelpCircle, Menu as MenuIcon, Image as ImageIcon, Mail, BarChart3, Layers } from "lucide-react";
 import { getWebsiteBySlug } from "@/lib/admin/queries";
 import { Card } from "@/components/admin/ui/Card";
 import WebsiteStatusControl from "@/components/admin/WebsiteStatusControl";
@@ -16,6 +16,8 @@ const SECTIONS: { label: string; href: string; icon: typeof Sliders; ready: bool
   { label: "Team", href: "/admin/websites/edos-centre/team", icon: Users, ready: true },
   { label: "Testimonials", href: "/admin/websites/edos-centre/testimonials", icon: Quote, ready: true },
   { label: "FAQs", href: "/admin/websites/edos-centre/faqs", icon: HelpCircle, ready: true },
+  { label: "Homepage Metrics", href: "/admin/websites/edos-centre/metrics", icon: BarChart3, ready: true },
+  { label: "Platform Framework", href: "/admin/websites/edos-centre/platform-layers", icon: Layers, ready: true },
   { label: "Navigation", href: "/admin/websites/edos-centre/navigation", icon: MenuIcon, ready: true },
   { label: "Media Library", href: "/admin/websites/edos-centre/media", icon: ImageIcon, ready: true },
   { label: "Forms Inbox", href: "/admin/websites/edos-centre/forms", icon: Mail, ready: true },

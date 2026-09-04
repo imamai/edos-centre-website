@@ -8,14 +8,17 @@ import MetricsSection      from "@/components/sections/MetricsSection";
 import TestimonialsSection from "@/components/sections/TestimonialsSection";
 import ThoughtLeadership   from "@/components/sections/ThoughtLeadership";
 import CtaSection          from "@/components/sections/CtaSection";
+import { getMetrics, getPlatformLayers } from "@/lib/queries";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [metrics, platformLayers] = await Promise.all([getMetrics(), getPlatformLayers()]);
+
   return (
     <>
       <HeroSection />
-      <PlatformFramework />
+      <PlatformFramework layers={platformLayers} />
       <SolutionsGrid />
-      <MetricsSection />
+      <MetricsSection metrics={metrics} />
       <IndustriesSection />
       <TechEcosystem />
       <SuccessStories />

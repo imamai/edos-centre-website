@@ -172,15 +172,15 @@ export interface Database {
         Relationships: [];
       };
       edoscentre_metrics: {
-        Row: { id: string; key: string; label: string; sub_label: string; description: string | null; sort_order: number; is_active: boolean; updated_at: string };
-        Insert: Omit<Database["public"]["Tables"]["edoscentre_metrics"]["Row"], "id"> & { id?: string };
+        Row: { id: string; key: string; label: string; sub_label: string; description: string | null; value: number; suffix: string; sort_order: number; is_active: boolean; updated_at: string };
+        Insert: Omit<Database["public"]["Tables"]["edoscentre_metrics"]["Row"], "id" | "updated_at"> & { id?: string; updated_at?: string };
         Update: Partial<Database["public"]["Tables"]["edoscentre_metrics"]["Insert"]>;
         Relationships: [];
       };
       edoscentre_platform_layers: {
         Row: {
           id: string; layer_number: number; name: string; subtitle: string | null;
-          description: string | null; icon: string | null; color_hex: string;
+          description: string | null; icon: string | null; color_hex: string; example: string | null;
           sort_order: number; is_active: boolean; created_at: string; updated_at: string;
         };
         Insert: Omit<Database["public"]["Tables"]["edoscentre_platform_layers"]["Row"], "id" | "created_at" | "updated_at"> & { id?: string };
