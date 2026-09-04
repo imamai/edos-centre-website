@@ -273,6 +273,7 @@ export interface Database {
         Row: {
           id: string; label: string; href: string; parent_id: string | null;
           menu_slot: string; sort_order: number; is_active: boolean; open_in_new: boolean;
+          description: string | null;
           created_at: string; updated_at: string;
         };
         Insert: Omit<Database["public"]["Tables"]["edoscentre_navigation_items"]["Row"], "id" | "created_at" | "updated_at"> & { id?: string };

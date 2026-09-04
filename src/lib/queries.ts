@@ -206,3 +206,54 @@ export async function getTechnologies({ featured = false } = {}) {
   const { data } = await q;
   return data ?? [];
 }
+
+// ── Navigation ────────────────────────────────────────────────────────────────
+export type NavChild = { label: string; href: string; description: string | null; openInNew: boolean };
+export type NavItem = { label: string; href: string; openInNew: boolean; children: NavChild[] };
+
+export async function getNavigation() {
+  const supabase = createStaticClient();
+  const { data } = await supabase
+    .from("edoscentre_navigation_items")
+    .select("*")
+    .eq("is_active", true)
+    .order("sort_order");
+  const rows = data ?? [];
+
+  const bySlot = (slot: string) => rows.filter((r) => r.menu_slot === slot);
+  const toChild = (r: (typeof rows)[number]): NavChild => ({
+    label: r.label,
+    href: r.href,
+    description: r.description,
+    openInNew: r.open_in_new,
+  });
+
+  const primary: NavItem[] = bySlot("primary")
+    .filter((r) => !r.parent_id)
+    .map((r) => ({
+      label: r.label,
+      href: r.href,
+      openInNew: r.open_in_new,
+      children: rows.filter((c) => c.parent_id === r.id).map(toChild),
+    }));
+
+  return {
+    primary,
+    footerCompany: bySlot("footer_company").map(toChild),
+    footerResources: bySlot("footer_resources").map(toChild),
+    footerServices: bySlot("footer_services").map(toChild),
+    footerIndustries: bySlot("footer_industries").map(toChild),
+    footerLegal: bySlot("footer_legal").map(toChild),
+  };
+}
+
+// ── Site settings ─────────────────────────────────────────────────────────────
+export async function getSiteSettings(): Promise<Record<string, string>> {
+  const supabase = createStaticClient();
+  const { data } = await supabase.from("edoscentre_site_settings").select("key, value");
+  const settings: Record<string, string> = {};
+  for (const row of data ?? []) {
+    settings[row.key] = typeof row.value === "string" ? row.value : JSON.stringify(row.value);
+  }
+  return settings;
+}

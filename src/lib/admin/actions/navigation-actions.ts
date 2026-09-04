@@ -11,6 +11,7 @@ const schema = z.object({
   label: z.string().min(1),
   href: z.string().min(1),
   parent_id: z.string().optional(),
+  description: z.string().optional(),
   menu_slot: z.string().min(1),
   sort_order: z.coerce.number().default(0),
 });
@@ -24,6 +25,7 @@ export async function upsertNavigationItem(formData: FormData, id?: string) {
     label: parsed.label,
     href: parsed.href,
     parent_id: parsed.parent_id || null,
+    description: parsed.description || null,
     menu_slot: parsed.menu_slot,
     sort_order: parsed.sort_order,
     is_active: formBool(formData, "is_active"),

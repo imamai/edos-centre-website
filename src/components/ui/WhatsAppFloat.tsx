@@ -1,9 +1,12 @@
 "use client";
 
-export default function WhatsAppFloat() {
+export default function WhatsAppFloat({ phone }: { phone?: string }) {
+  const number = (phone ?? "").replace(/[^\d]/g, "");
+  if (!number) return null;
+
   return (
     <a
-      href="https://wa.me/254721201287"
+      href={`https://wa.me/${number}`}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Chat with us on WhatsApp"

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
+import { getSiteSettings } from "@/lib/queries";
 
 const inter = Inter({
   subsets:  ["latin"],
@@ -15,58 +16,67 @@ const plusJakarta = Plus_Jakarta_Sans({
   weight:   ["400", "500", "600", "700", "800"],
 });
 
-export const metadata: Metadata = {
-  title: {
-    default:  "Edos Centre – Data Analytics, Engineering & Digital Transformation",
-    template: "%s | Edos Centre",
-  },
-  description:
-    "Edos Centre is East Africa's premier Data Analytics, Data Engineering, SaaS Development and Digital Transformation partner. From data collection to AI-enabled decision support.",
-  keywords: [
-    "data analytics Kenya", "data engineering East Africa", "DHIS2 implementation",
-    "M&E systems", "SaaS development Nairobi", "digital transformation Kenya",
-    "health informatics", "Power BI consultant Kenya", "ODK KoboToolbox",
-    "NGO M&E platform",
-  ],
-  authors: [{ name: "Edos Centre", url: "https://edoscentre.com" }],
-  creator: "Edos Centre",
-  metadataBase: new URL("https://edoscentre.com"),
-  openGraph: {
-    type:        "website",
-    locale:      "en_US",
-    url:         "https://edoscentre.com",
-    siteName:    "Edos Centre",
-    title:       "Edos Centre – Embrace Data for Optimum Solutions",
-    description: "Transforming data into insights, software into impact, and digital challenges into scalable solutions across East Africa.",
-    images: [{
-      url:    "/og-image.png",
-      width:  1200,
-      height: 630,
-      alt:    "Edos Centre – Data & Digital Transformation",
-    }],
-  },
-  twitter: {
-    card:        "summary_large_image",
-    title:       "Edos Centre – Data & Digital Transformation",
-    description: "East Africa's data analytics and digital transformation partner.",
-    images:      ["/og-image.png"],
-    creator:     "@edoscentre",
-  },
-  robots: {
-    index:  true,
-    follow: true,
-    googleBot: { index: true, follow: true, "max-image-preview": "large" },
-  },
-  icons: {
-    icon: [
-      { url: "/favicon.ico" },
-      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
-      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  const title = settings.site_title || "Edos Centre – Data Analytics, Engineering & Digital Transformation";
+  const description =
+    settings.site_description ||
+    "Edos Centre is East Africa's premier Data Analytics, Data Engineering, SaaS Development and Digital Transformation partner. From data collection to AI-enabled decision support.";
+  const ogImage = settings.og_image || "/og-image.png";
+  const twitterHandle = settings.twitter_handle || "@edoscentre";
+
+  return {
+    title: {
+      default:  title,
+      template: "%s | Edos Centre",
+    },
+    description,
+    keywords: [
+      "data analytics Kenya", "data engineering East Africa", "DHIS2 implementation",
+      "M&E systems", "SaaS development Nairobi", "digital transformation Kenya",
+      "health informatics", "Power BI consultant Kenya", "ODK KoboToolbox",
+      "NGO M&E platform",
     ],
-    apple: "/apple-touch-icon.png",
-  },
-  manifest: "/site.webmanifest",
-};
+    authors: [{ name: "Edos Centre", url: "https://edoscentre.com" }],
+    creator: "Edos Centre",
+    metadataBase: new URL("https://edoscentre.com"),
+    openGraph: {
+      type:        "website",
+      locale:      "en_US",
+      url:         "https://edoscentre.com",
+      siteName:    "Edos Centre",
+      title,
+      description,
+      images: [{
+        url:    ogImage,
+        width:  1200,
+        height: 630,
+        alt:    title,
+      }],
+    },
+    twitter: {
+      card:        "summary_large_image",
+      title,
+      description,
+      images:      [ogImage],
+      creator:     twitterHandle,
+    },
+    robots: {
+      index:  true,
+      follow: true,
+      googleBot: { index: true, follow: true, "max-image-preview": "large" },
+    },
+    icons: {
+      icon: [
+        { url: "/favicon.ico" },
+        { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+        { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      ],
+      apple: "/apple-touch-icon.png",
+    },
+    manifest: "/site.webmanifest",
+  };
+}
 
 export const viewport: Viewport = {
   themeColor:  "#1A1733",

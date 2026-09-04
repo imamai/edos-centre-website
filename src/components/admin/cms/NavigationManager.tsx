@@ -9,9 +9,18 @@ import type { Database } from "@/types/database.types";
 
 type NavItem = Database["public"]["Tables"]["edoscentre_navigation_items"]["Row"];
 
-const MENU_SLOTS = ["primary", "footer_company", "footer_resources", "footer_legal"];
+const MENU_SLOTS = [
+  "primary",
+  "footer_company",
+  "footer_resources",
+  "footer_services",
+  "footer_industries",
+  "footer_legal",
+];
 
 export default function NavigationManager({ items }: { items: NavItem[] }) {
+  const topLevelPrimary = items.filter((i) => i.menu_slot === "primary" && !i.parent_id);
+
   return (
     <EntityManager<NavItem>
       title="Navigation"
@@ -54,6 +63,25 @@ export default function NavigationManager({ items }: { items: NavItem[] }) {
             <div>
               <Label htmlFor="sort_order">Sort order</Label>
               <Input id="sort_order" name="sort_order" type="number" defaultValue={editing?.sort_order ?? 0} />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label htmlFor="parent_id">Parent (for dropdown submenus)</Label>
+              <Select id="parent_id" name="parent_id" defaultValue={editing?.parent_id ?? ""}>
+                <option value="">None (top-level item)</option>
+                {topLevelPrimary
+                  .filter((p) => p.id !== editing?.id)
+                  .map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.label}
+                    </option>
+                  ))}
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="description">Description (dropdown submenu items only)</Label>
+              <Input id="description" name="description" defaultValue={editing?.description ?? ""} />
             </div>
           </div>
           <div className="flex gap-6 pt-1">

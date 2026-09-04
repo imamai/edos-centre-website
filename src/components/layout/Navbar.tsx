@@ -7,46 +7,10 @@ import { useState, useEffect } from "react";
 import { Menu, X, ChevronDown, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import type { NavItem } from "@/lib/queries";
 
-const NAV_ITEMS = [
-  {
-    label: "Solutions",
-    href: "/services",
-    children: [
-      { label: "Data Analytics",      href: "/services/data-analytics",      desc: "BI, dashboards & advanced analytics" },
-      { label: "Data Engineering",    href: "/services/data-engineering",    desc: "ETL pipelines, lakes & warehouses" },
-      { label: "SaaS Platforms",      href: "/services/saas-platforms",      desc: "Multi-tenant cloud applications" },
-      { label: "Web Development",     href: "/services/web-development",     desc: "Enterprise web applications" },
-      { label: "Mobile Applications", href: "/services/mobile-applications", desc: "iOS, Android & cross-platform" },
-      { label: "M&E Systems",         href: "/services/monitoring-evaluation", desc: "DHIS2, KoboToolbox & reporting" },
-    ],
-  },
-  {
-    label: "Industries",
-    href: "/industries",
-    children: [
-      { label: "Healthcare",         href: "/industries/healthcare",         desc: "HMIS, EMR & health informatics" },
-      { label: "NGOs & Development", href: "/industries/ngos",              desc: "M&E, reporting & program management" },
-      { label: "Government",         href: "/industries/government",         desc: "County dashboards & e-services" },
-      { label: "Education",          href: "/industries/education",          desc: "School management & analytics" },
-      { label: "Agriculture",        href: "/industries/agriculture",        desc: "Crop monitoring & value-chain data" },
-    ],
-  },
-  { label: "Case Studies", href: "/case-studies" },
-  {
-    label: "Resources",
-    href: "/resources",
-    children: [
-      { label: "Blog",          href: "/blog",       desc: "Insights & thought leadership" },
-      { label: "Guides",        href: "/resources?type=guide",       desc: "How-to guides & best practices" },
-      { label: "Whitepapers",   href: "/resources?type=whitepaper",  desc: "In-depth research & reports" },
-      { label: "Case Studies",  href: "/case-studies",               desc: "Real-world project outcomes" },
-    ],
-  },
-  { label: "About", href: "/about" },
-];
-
-export default function Navbar() {
+export default function Navbar({ nav }: { nav: { primary: NavItem[] } }) {
+  const NAV_ITEMS = nav.primary;
   const pathname = usePathname();
   const [scrolled, setScrolled]     = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -87,7 +51,7 @@ export default function Navbar() {
               <div
                 key={item.label}
                 className="relative"
-                onMouseEnter={() => item.children && setActiveMenu(item.label)}
+                onMouseEnter={() => item.children.length > 0 && setActiveMenu(item.label)}
                 onMouseLeave={() => setActiveMenu(null)}
               >
                 <Link
@@ -103,11 +67,11 @@ export default function Navbar() {
                   )}
                 >
                   {item.label}
-                  {item.children && <ChevronDown className="w-3.5 h-3.5 opacity-60" />}
+                  {item.children.length > 0 && <ChevronDown className="w-3.5 h-3.5 opacity-60" />}
                 </Link>
 
                 {/* Dropdown */}
-                {item.children && (
+                {item.children.length > 0 && (
                   <AnimatePresence>
                     {activeMenu === item.label && (
                       <motion.div
@@ -129,7 +93,7 @@ export default function Navbar() {
                                 <p className="text-sm font-medium text-brand-navy group-hover:text-brand-red transition-colors">
                                   {child.label}
                                 </p>
-                                <p className="text-xs text-gray-500 mt-0.5">{child.desc}</p>
+                                <p className="text-xs text-gray-500 mt-0.5">{child.description}</p>
                               </div>
                             </Link>
                           ))}
@@ -190,7 +154,7 @@ export default function Navbar() {
                   >
                     {item.label}
                   </Link>
-                  {item.children && (
+                  {item.children.length > 0 && (
                     <div className="pl-4 mt-1 space-y-1">
                       {item.children.map((child) => (
                         <Link
