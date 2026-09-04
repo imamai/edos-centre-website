@@ -149,13 +149,19 @@ export async function getBlogPosts({ limit = 9, categorySlug }: { limit?: number
   let q: any = supabase
     .from("edoscentre_v_blog_posts_published")
     .select("*")
+    .order("published_at", { ascending: false })
     .limit(limit);
   if (categorySlug) q = q.eq("category_slug", categorySlug);
   const { data } = await q;
   return (data ?? []) as Database["public"]["Views"]["edoscentre_v_blog_posts_published"]["Row"][];
 }
 
-export async function getBlogPostBySlug(slug: string) {
+export type BlogPostWithContent = Database["public"]["Tables"]["edoscentre_blog_posts"]["Row"] & {
+  edoscentre_blog_categories: Database["public"]["Tables"]["edoscentre_blog_categories"]["Row"] | null;
+  edoscentre_blog_post_tags: { edoscentre_blog_tags: Database["public"]["Tables"]["edoscentre_blog_tags"]["Row"] | null }[];
+};
+
+export async function getBlogPostBySlug(slug: string): Promise<BlogPostWithContent | null> {
   const supabase = createStaticClient();
   const { data } = await supabase
     .from("edoscentre_blog_posts")
@@ -163,7 +169,7 @@ export async function getBlogPostBySlug(slug: string) {
     .eq("slug", slug)
     .eq("is_published", true)
     .single();
-  return data;
+  return data as unknown as BlogPostWithContent | null;
 }
 
 export async function getFeaturedBlogPosts(limit = 3) {

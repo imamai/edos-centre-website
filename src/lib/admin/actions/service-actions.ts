@@ -38,7 +38,6 @@ export async function upsertService(formData: FormData, id?: string) {
   const supabase = await createServiceClient();
   const payload = {
     title: parsed.title,
-    slug: slugify(parsed.title),
     tagline: parsed.tagline || null,
     description: parsed.description || null,
     long_description: parsed.long_description || null,
@@ -52,12 +51,19 @@ export async function upsertService(formData: FormData, id?: string) {
     is_active: formBool(formData, "is_active"),
   };
 
+  // Slug is set once at creation and preserved on edit, so renaming a title never
+  // breaks the public URL, inbound links, or SEO for an existing entry.
   let serviceId = id;
+  let slug: string;
   if (id) {
+    const { data: existing, error: fetchErr } = await supabase.from("edoscentre_services").select("slug").eq("id", id).single();
+    if (fetchErr) throw new Error(fetchErr.message);
+    slug = existing.slug;
     const { error } = await supabase.from("edoscentre_services").update(payload).eq("id", id);
     if (error) throw new Error(error.message);
   } else {
-    const { data, error } = await supabase.from("edoscentre_services").insert(payload).select("id").single();
+    slug = slugify(parsed.title);
+    const { data, error } = await supabase.from("edoscentre_services").insert({ ...payload, slug }).select("id").single();
     if (error) throw new Error(error.message);
     serviceId = data.id;
   }
@@ -88,7 +94,7 @@ export async function upsertService(formData: FormData, id?: string) {
   await logAudit({ actorId: admin.id, action: id ? "service_updated" : "service_created", metadata: { title: parsed.title } });
   revalidatePath("/admin/websites/edos-centre/services");
   revalidatePath("/services");
-  revalidatePath(`/services/${payload.slug}`);
+  revalidatePath(`/services/${slug}`);
 }
 
 export async function deleteService(id: string, title: string) {

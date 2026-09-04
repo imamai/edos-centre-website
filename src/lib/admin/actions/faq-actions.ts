@@ -55,11 +55,11 @@ export async function upsertFaqCategory(formData: FormData, id?: string) {
   const admin = await requireAdmin("edos-centre");
   const parsed = categorySchema.parse(Object.fromEntries(formData));
   const supabase = await createServiceClient();
-  const payload = { name: parsed.name, slug: slugify(parsed.name), sort_order: parsed.sort_order };
+  const payload = { name: parsed.name, sort_order: parsed.sort_order };
 
   const { error } = id
     ? await supabase.from("edoscentre_faq_categories").update(payload).eq("id", id)
-    : await supabase.from("edoscentre_faq_categories").insert(payload);
+    : await supabase.from("edoscentre_faq_categories").insert({ ...payload, slug: slugify(parsed.name) });
   if (error) throw new Error(error.message);
 
   await logAudit({ actorId: admin.id, action: id ? "faq_category_updated" : "faq_category_created" });

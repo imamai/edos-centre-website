@@ -1,37 +1,9 @@
 import Link from "next/link";
 import { ArrowRight, BookOpen, FileText, Video, BarChart3, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { Database } from "@/types/database.types";
 
-// Static placeholder posts — replaced by DB data in production
-const POSTS = [
-  {
-    category: "Data Engineering",
-    color: "#E31E24",
-    title: "Building a Health Data Lake for East Africa: Architecture Patterns That Work",
-    excerpt: "How we designed a scalable, HIPAA-aligned data lake for a county health network processing 4M+ records monthly.",
-    readTime: 8,
-    href: "/blog/health-data-lake-architecture",
-    type: "blog",
-  },
-  {
-    category: "M&E Systems",
-    color: "#6B5B95",
-    title: "Why KoboToolbox Beats Google Forms for Serious M&E Practitioners",
-    excerpt: "A practical comparison of data collection tools across validation, skip logic, offline use, and DHIS2 integration.",
-    readTime: 6,
-    href: "/blog/kobo-vs-google-forms",
-    type: "blog",
-  },
-  {
-    category: "Dashboard Development",
-    color: "#2E234F",
-    title: "Apache Superset vs Power BI: A No-Nonsense Enterprise Comparison",
-    excerpt: "Cost, performance, embedding, and African connectivity tested against real government deployments.",
-    readTime: 10,
-    href: "/blog/superset-vs-power-bi",
-    type: "blog",
-  },
-];
+type BlogPostSummary = Database["public"]["Views"]["edoscentre_v_blog_posts_published"]["Row"];
 
 const RESOURCES = [
   { icon: FileText, label: "Whitepaper",      href: "/resources?type=whitepaper",      title: "State of Health Informatics in Kenya 2025",     desc: "Comprehensive review of digital health infrastructure." },
@@ -40,7 +12,7 @@ const RESOURCES = [
   { icon: Video,     label: "Webinar",         href: "/resources?type=webinar",         title: "DHIS2 Integration Masterclass",                 desc: "Live walkthrough of DHIS2 API and custom apps." },
 ];
 
-export default function ThoughtLeadership() {
+export default function ThoughtLeadership({ posts }: { posts: BlogPostSummary[] }) {
   return (
     <section className="py-24 bg-brand-muted">
       <div className="section-container">
@@ -61,28 +33,32 @@ export default function ThoughtLeadership() {
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8 mb-12">
-          {POSTS.map((post, i) => (
+          {posts.map((post, i) => (
             <Link
-              key={post.href}
-              href={post.href}
+              key={post.slug}
+              href={`/blog/${post.slug}`}
               className={cn(
                 "group card-enterprise p-6 block",
                 i === 0 ? "lg:col-span-1" : "",
               )}
             >
               <div className="flex items-center gap-2 mb-4">
-                <span className="badge text-xs font-semibold px-2.5 py-1 rounded-full" style={{ background: `${post.color}15`, color: post.color }}>
-                  {post.category}
-                </span>
-                <div className="flex items-center gap-1 text-xs text-gray-400 ml-auto">
-                  <Clock className="w-3 h-3" />
-                  {post.readTime} min read
-                </div>
+                {post.category_name && (
+                  <span className="badge text-xs font-semibold px-2.5 py-1 rounded-full" style={{ background: `${post.category_color}15`, color: post.category_color ?? undefined }}>
+                    {post.category_name}
+                  </span>
+                )}
+                {post.reading_time_min && (
+                  <div className="flex items-center gap-1 text-xs text-gray-400 ml-auto">
+                    <Clock className="w-3 h-3" />
+                    {post.reading_time_min} min read
+                  </div>
+                )}
               </div>
               <h3 className="font-display font-bold text-brand-navy text-lg leading-snug mb-3 group-hover:text-brand-red transition-colors">
                 {post.title}
               </h3>
-              <p className="text-sm text-gray-500 leading-relaxed line-clamp-3 mb-4">{post.excerpt}</p>
+              {post.excerpt && <p className="text-sm text-gray-500 leading-relaxed line-clamp-3 mb-4">{post.excerpt}</p>}
               <div className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-red group-hover:gap-2.5 transition-all">
                 Read article <ArrowRight className="w-4 h-4" />
               </div>

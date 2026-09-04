@@ -31,7 +31,6 @@ export async function upsertBlogPost(formData: FormData, id?: string) {
   const isPublished = formBool(formData, "is_published");
   const payload = {
     title: parsed.title,
-    slug: slugify(parsed.title),
     excerpt: parsed.excerpt || null,
     content: parsed.content || null,
     cover_image_url: parsed.cover_image_url || null,
@@ -49,12 +48,19 @@ export async function upsertBlogPost(formData: FormData, id?: string) {
     published_at: isPublished ? new Date().toISOString() : null,
   };
 
+  // Slug is set once at creation and preserved on edit, so renaming a title never
+  // breaks the public URL, inbound links, or SEO for an existing entry.
   let postId = id;
+  let slug: string;
   if (id) {
+    const { data: existing, error: fetchErr } = await supabase.from("edoscentre_blog_posts").select("slug").eq("id", id).single();
+    if (fetchErr) throw new Error(fetchErr.message);
+    slug = existing.slug;
     const { error } = await supabase.from("edoscentre_blog_posts").update(payload).eq("id", id);
     if (error) throw new Error(error.message);
   } else {
-    const { data, error } = await supabase.from("edoscentre_blog_posts").insert({ ...payload, view_count: 0 }).select("id").single();
+    slug = slugify(parsed.title);
+    const { data, error } = await supabase.from("edoscentre_blog_posts").insert({ ...payload, slug, view_count: 0 }).select("id").single();
     if (error) throw new Error(error.message);
     postId = data.id;
   }
@@ -67,7 +73,7 @@ export async function upsertBlogPost(formData: FormData, id?: string) {
   await logAudit({ actorId: admin.id, action: id ? "blog_post_updated" : "blog_post_created", metadata: { title: parsed.title } });
   revalidatePath("/admin/websites/edos-centre/blog");
   revalidatePath("/blog");
-  revalidatePath(`/blog/${payload.slug}`);
+  revalidatePath(`/blog/${slug}`);
 }
 
 export async function deleteBlogPost(id: string, title: string) {
@@ -87,11 +93,11 @@ export async function upsertBlogCategory(formData: FormData, id?: string) {
   const admin = await requireAdmin("edos-centre");
   const parsed = categorySchema.parse(Object.fromEntries(formData));
   const supabase = await createServiceClient();
-  const payload = { name: parsed.name, slug: slugify(parsed.name), color_hex: parsed.color_hex, sort_order: parsed.sort_order };
+  const payload = { name: parsed.name, color_hex: parsed.color_hex, sort_order: parsed.sort_order };
 
   const { error } = id
     ? await supabase.from("edoscentre_blog_categories").update(payload).eq("id", id)
-    : await supabase.from("edoscentre_blog_categories").insert({ ...payload, description: null });
+    : await supabase.from("edoscentre_blog_categories").insert({ ...payload, slug: slugify(parsed.name), description: null });
   if (error) throw new Error(error.message);
 
   await logAudit({ actorId: admin.id, action: id ? "blog_category_updated" : "blog_category_created" });
@@ -114,11 +120,10 @@ export async function upsertBlogTag(formData: FormData, id?: string) {
   const admin = await requireAdmin("edos-centre");
   const parsed = tagSchema.parse(Object.fromEntries(formData));
   const supabase = await createServiceClient();
-  const payload = { name: parsed.name, slug: slugify(parsed.name) };
 
   const { error } = id
-    ? await supabase.from("edoscentre_blog_tags").update(payload).eq("id", id)
-    : await supabase.from("edoscentre_blog_tags").insert(payload);
+    ? await supabase.from("edoscentre_blog_tags").update({ name: parsed.name }).eq("id", id)
+    : await supabase.from("edoscentre_blog_tags").insert({ name: parsed.name, slug: slugify(parsed.name) });
   if (error) throw new Error(error.message);
 
   await logAudit({ actorId: admin.id, action: id ? "blog_tag_updated" : "blog_tag_created" });

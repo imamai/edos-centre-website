@@ -22,7 +22,6 @@ export async function upsertMetric(formData: FormData, id?: string) {
 
   const supabase = await createServiceClient();
   const payload = {
-    key: slugify(parsed.sub_label).replace(/-/g, "_"),
     sub_label: parsed.sub_label,
     label: `${parsed.value}${parsed.suffix ?? ""}`,
     value: parsed.value,
@@ -34,7 +33,7 @@ export async function upsertMetric(formData: FormData, id?: string) {
 
   const { error } = id
     ? await supabase.from("edoscentre_metrics").update(payload).eq("id", id)
-    : await supabase.from("edoscentre_metrics").insert(payload);
+    : await supabase.from("edoscentre_metrics").insert({ ...payload, key: slugify(parsed.sub_label).replace(/-/g, "_") });
   if (error) throw new Error(error.message);
 
   await logAudit({ actorId: admin.id, action: id ? "metric_updated" : "metric_created", metadata: { sub_label: parsed.sub_label } });

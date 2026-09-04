@@ -49,7 +49,6 @@ export async function upsertCaseStudy(formData: FormData, id?: string) {
   const isPublished = formBool(formData, "is_published");
   const payload = {
     title: parsed.title,
-    slug: slugify(parsed.title),
     client_name: parsed.client_name || null,
     client_logo_url: parsed.client_logo_url || null,
     industry_id: parsed.industry_id || null,
@@ -69,12 +68,19 @@ export async function upsertCaseStudy(formData: FormData, id?: string) {
     published_at: isPublished ? new Date().toISOString() : null,
   };
 
+  // Slug is set once at creation and preserved on edit, so renaming a title never
+  // breaks the public URL, inbound links, or SEO for an existing entry.
   let caseStudyId = id;
+  let slug: string;
   if (id) {
+    const { data: existing, error: fetchErr } = await supabase.from("edoscentre_case_studies").select("slug").eq("id", id).single();
+    if (fetchErr) throw new Error(fetchErr.message);
+    slug = existing.slug;
     const { error } = await supabase.from("edoscentre_case_studies").update(payload).eq("id", id);
     if (error) throw new Error(error.message);
   } else {
-    const { data, error } = await supabase.from("edoscentre_case_studies").insert(payload).select("id").single();
+    slug = slugify(parsed.title);
+    const { data, error } = await supabase.from("edoscentre_case_studies").insert({ ...payload, slug }).select("id").single();
     if (error) throw new Error(error.message);
     caseStudyId = data.id;
   }
@@ -97,7 +103,7 @@ export async function upsertCaseStudy(formData: FormData, id?: string) {
   await logAudit({ actorId: admin.id, action: id ? "case_study_updated" : "case_study_created", metadata: { title: parsed.title } });
   revalidatePath("/admin/websites/edos-centre/case-studies");
   revalidatePath("/case-studies");
-  revalidatePath(`/case-studies/${payload.slug}`);
+  revalidatePath(`/case-studies/${slug}`);
 }
 
 export async function deleteCaseStudy(id: string, title: string) {

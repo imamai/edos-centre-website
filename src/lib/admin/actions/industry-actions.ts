@@ -40,7 +40,6 @@ export async function upsertIndustry(formData: FormData, id?: string) {
   const supabase = await createServiceClient();
   const payload = {
     name: parsed.name,
-    slug: slugify(parsed.name),
     tagline: parsed.tagline || null,
     description: parsed.description || null,
     long_description: parsed.long_description || null,
@@ -53,12 +52,19 @@ export async function upsertIndustry(formData: FormData, id?: string) {
     is_active: formBool(formData, "is_active"),
   };
 
+  // Slug is set once at creation and preserved on edit, so renaming a name never
+  // breaks the public URL, inbound links, or SEO for an existing entry.
   let industryId = id;
+  let slug: string;
   if (id) {
+    const { data: existing, error: fetchErr } = await supabase.from("edoscentre_industries").select("slug").eq("id", id).single();
+    if (fetchErr) throw new Error(fetchErr.message);
+    slug = existing.slug;
     const { error } = await supabase.from("edoscentre_industries").update(payload).eq("id", id);
     if (error) throw new Error(error.message);
   } else {
-    const { data, error } = await supabase.from("edoscentre_industries").insert(payload).select("id").single();
+    slug = slugify(parsed.name);
+    const { data, error } = await supabase.from("edoscentre_industries").insert({ ...payload, slug }).select("id").single();
     if (error) throw new Error(error.message);
     industryId = data.id;
   }
@@ -109,7 +115,7 @@ export async function upsertIndustry(formData: FormData, id?: string) {
   await logAudit({ actorId: admin.id, action: id ? "industry_updated" : "industry_created", metadata: { name: parsed.name } });
   revalidatePath("/admin/websites/edos-centre/industries");
   revalidatePath("/industries");
-  revalidatePath(`/industries/${payload.slug}`);
+  revalidatePath(`/industries/${slug}`);
 }
 
 export async function deleteIndustry(id: string, name: string) {
