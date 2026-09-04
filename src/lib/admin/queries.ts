@@ -91,6 +91,7 @@ export type IndustryWithRelations = Database["public"]["Tables"]["edoscentre_ind
   edoscentre_industry_challenges: Database["public"]["Tables"]["edoscentre_industry_challenges"]["Row"][];
   edoscentre_industry_solutions: Database["public"]["Tables"]["edoscentre_industry_solutions"]["Row"][];
   edoscentre_industry_outcomes: Database["public"]["Tables"]["edoscentre_industry_outcomes"]["Row"][];
+  edoscentre_industry_metrics: Database["public"]["Tables"]["edoscentre_industry_metrics"]["Row"][];
   edoscentre_industry_technologies: { technology_id: string }[];
 };
 
@@ -99,7 +100,7 @@ export async function getIndustriesAdminFull(): Promise<IndustryWithRelations[]>
   const { data } = await supabase
     .from("edoscentre_industries")
     .select(
-      "*, edoscentre_industry_challenges(*), edoscentre_industry_solutions(*), edoscentre_industry_outcomes(*), edoscentre_industry_technologies(technology_id)",
+      "*, edoscentre_industry_challenges(*), edoscentre_industry_solutions(*), edoscentre_industry_outcomes(*), edoscentre_industry_metrics(*), edoscentre_industry_technologies(technology_id)",
     )
     .order("sort_order");
   return (data ?? []) as unknown as IndustryWithRelations[];

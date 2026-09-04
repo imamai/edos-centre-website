@@ -87,6 +87,18 @@ export async function upsertIndustry(formData: FormData, id?: string) {
       .insert(outcomes.map((outcome, i) => ({ industry_id: industryId!, outcome, sort_order: i })));
   }
 
+  const metricLabels = formData.getAll("metric_label").map(String);
+  const metricValues = formData.getAll("metric_value").map(String);
+  const metrics = metricLabels
+    .map((metric_label, i) => ({ metric_label: metric_label.trim(), metric_value: (metricValues[i] ?? "").trim() }))
+    .filter((m) => m.metric_label && m.metric_value);
+  await supabase.from("edoscentre_industry_metrics").delete().eq("industry_id", industryId!);
+  if (metrics.length) {
+    await supabase
+      .from("edoscentre_industry_metrics")
+      .insert(metrics.map((m, i) => ({ industry_id: industryId!, ...m, sort_order: i })));
+  }
+
   await supabase.from("edoscentre_industry_technologies").delete().eq("industry_id", industryId!);
   if (parsed.technology_ids.length) {
     await supabase.from("edoscentre_industry_technologies").insert(

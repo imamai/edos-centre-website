@@ -1,23 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Heart, TrendingUp, Landmark, GraduationCap, Leaf, Building2, ShoppingBag } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { getIndustries } from "@/lib/queries";
+import { getIcon, getIndustryAccent } from "@/lib/icon-map";
 
 export const metadata: Metadata = {
   title: "Industry Solutions",
   description: "Edos Centre delivers deep-domain digital transformation solutions for healthcare, NGOs, government, education, agriculture, finance and retail.",
 };
 
-const INDUSTRIES = [
-  { slug: "healthcare",          icon: Heart,        name: "Healthcare",         tagline: "HMIS, EMR & health informatics",              color: "#E31E24" },
-  { slug: "ngos",               icon: TrendingUp,   name: "NGOs & Development", tagline: "M&E, programme management & donor reporting",  color: "#6B5B95" },
-  { slug: "government",         icon: Landmark,     name: "Government",         tagline: "County dashboards & e-service delivery",       color: "#2E234F" },
-  { slug: "education",          icon: GraduationCap, name: "Education",         tagline: "School management & learning analytics",       color: "#f59e0b" },
-  { slug: "agriculture",        icon: Leaf,         name: "Agriculture",        tagline: "Farmer registries & agri-data systems",        color: "#22c55e" },
-  { slug: "financial-services", icon: Building2,    name: "Financial Services", tagline: "Compliance, fraud analytics & fintech",        color: "#f59e0b" },
-  { slug: "retail",             icon: ShoppingBag,  name: "Retail & Logistics", tagline: "Inventory, customer analytics & omnichannel", color: "#06b6d4" },
-];
+export default async function IndustriesPage() {
+  const industries = await getIndustries();
 
-export default function IndustriesPage() {
   return (
     <>
       <section className="pt-32 pb-20 bg-gradient-hero relative overflow-hidden">
@@ -39,12 +33,13 @@ export default function IndustriesPage() {
       <section className="py-20 bg-brand-muted">
         <div className="section-container">
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {INDUSTRIES.map((ind) => {
-              const Icon = ind.icon;
+            {industries.map((ind) => {
+              const Icon = getIcon(ind.icon);
+              const color = getIndustryAccent(ind.slug);
               return (
                 <Link key={ind.slug} href={`/industries/${ind.slug}`} className="group card-enterprise p-6 block">
-                  <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform" style={{ background: `${ind.color}15` }}>
-                    <Icon className="w-7 h-7" style={{ color: ind.color }} />
+                  <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform" style={{ background: `${color}15` }}>
+                    <Icon className="w-7 h-7" style={{ color }} />
                   </div>
                   <h2 className="font-display font-bold text-xl text-brand-navy mb-1 group-hover:text-brand-red transition-colors">{ind.name}</h2>
                   <p className="text-sm text-gray-500 mb-4">{ind.tagline}</p>

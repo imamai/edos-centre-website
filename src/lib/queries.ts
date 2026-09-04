@@ -32,25 +32,35 @@ export async function getServiceBySlug(slug: string): Promise<ServiceWithContent
 }
 
 // ── Industries ────────────────────────────────────────────────────────────────
-export async function getIndustries() {
+const INDUSTRY_SELECT = `*, edoscentre_industry_challenges(*), edoscentre_industry_solutions(*), edoscentre_industry_outcomes(*), edoscentre_industry_metrics(*), edoscentre_industry_technologies(technology_id, edoscentre_technologies(*))`;
+
+export type IndustryWithContent = Database["public"]["Tables"]["edoscentre_industries"]["Row"] & {
+  edoscentre_industry_challenges: Database["public"]["Tables"]["edoscentre_industry_challenges"]["Row"][];
+  edoscentre_industry_solutions: Database["public"]["Tables"]["edoscentre_industry_solutions"]["Row"][];
+  edoscentre_industry_outcomes: Database["public"]["Tables"]["edoscentre_industry_outcomes"]["Row"][];
+  edoscentre_industry_metrics: Database["public"]["Tables"]["edoscentre_industry_metrics"]["Row"][];
+  edoscentre_industry_technologies: { technology_id: string; edoscentre_technologies: Database["public"]["Tables"]["edoscentre_technologies"]["Row"] | null }[];
+};
+
+export async function getIndustries(): Promise<IndustryWithContent[]> {
   const supabase = createStaticClient();
   const { data } = await supabase
     .from("edoscentre_industries")
-    .select(`*, edoscentre_industry_challenges(*), edoscentre_industry_solutions(*), edoscentre_industry_outcomes(*), edoscentre_industry_technologies(technology_id, edoscentre_technologies(*))`)
+    .select(INDUSTRY_SELECT)
     .eq("is_active", true)
     .order("sort_order");
-  return data ?? [];
+  return (data ?? []) as unknown as IndustryWithContent[];
 }
 
-export async function getIndustryBySlug(slug: string) {
+export async function getIndustryBySlug(slug: string): Promise<IndustryWithContent | null> {
   const supabase = createStaticClient();
   const { data } = await supabase
     .from("edoscentre_industries")
-    .select(`*, edoscentre_industry_challenges(*), edoscentre_industry_solutions(*), edoscentre_industry_outcomes(*), edoscentre_industry_technologies(technology_id, edoscentre_technologies(*))`)
+    .select(INDUSTRY_SELECT)
     .eq("slug", slug)
     .eq("is_active", true)
     .single();
-  return data;
+  return data as unknown as IndustryWithContent | null;
 }
 
 // ── Case Studies ──────────────────────────────────────────────────────────────

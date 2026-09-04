@@ -75,6 +75,12 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["edoscentre_industry_outcomes"]["Insert"]>;
         Relationships: [];
       };
+      edoscentre_industry_metrics: {
+        Row: { id: string; industry_id: string; metric_label: string; metric_value: string; sort_order: number };
+        Insert: Omit<Database["public"]["Tables"]["edoscentre_industry_metrics"]["Row"], "id"> & { id?: string };
+        Update: Partial<Database["public"]["Tables"]["edoscentre_industry_metrics"]["Insert"]>;
+        Relationships: [];
+      };
       edoscentre_industry_technologies: {
         Row: { industry_id: string; technology_id: string };
         Insert: Database["public"]["Tables"]["edoscentre_industry_technologies"]["Row"];

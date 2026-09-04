@@ -11,6 +11,7 @@ type Industry = Database["public"]["Tables"]["edoscentre_industries"]["Row"] & {
   edoscentre_industry_challenges: Database["public"]["Tables"]["edoscentre_industry_challenges"]["Row"][];
   edoscentre_industry_solutions: Database["public"]["Tables"]["edoscentre_industry_solutions"]["Row"][];
   edoscentre_industry_outcomes: Database["public"]["Tables"]["edoscentre_industry_outcomes"]["Row"][];
+  edoscentre_industry_metrics: Database["public"]["Tables"]["edoscentre_industry_metrics"]["Row"][];
   edoscentre_industry_technologies: { technology_id: string }[];
 };
 type Technology = Database["public"]["Tables"]["edoscentre_technologies"]["Row"];
@@ -92,6 +93,20 @@ export default function IndustriesManager({ industries, technologies }: { indust
                 name="outcomes"
                 defaultValue={editing?.edoscentre_industry_outcomes?.map((o) => o.outcome).join("\n") ?? ""}
               />
+            </div>
+          </div>
+          <div>
+            <Label>Key metrics (shown at the top of the industry page)</Label>
+            <div className="space-y-2">
+              {[0, 1, 2].map((i) => {
+                const m = editing?.edoscentre_industry_metrics?.[i];
+                return (
+                  <div key={i} className="grid grid-cols-2 gap-3">
+                    <Input name="metric_label" placeholder="Label, e.g. Facilities Connected" defaultValue={m?.metric_label ?? ""} />
+                    <Input name="metric_value" placeholder="Value, e.g. 200+" defaultValue={m?.metric_value ?? ""} />
+                  </div>
+                );
+              })}
             </div>
           </div>
           <div>
