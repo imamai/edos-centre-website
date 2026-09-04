@@ -5,9 +5,8 @@ import type { Database } from "@/types/database.types";
 export async function getServices() {
   const supabase = await createClient();
   const { data } = await supabase
-    .schema("website")
-    .from("services")
-    .select(`*, service_capabilities(*), service_technologies(technology_id, technologies(*))`)
+    .from("edoscentre_services")
+    .select(`*, edoscentre_service_capabilities(*), edoscentre_service_technologies(technology_id, edoscentre_technologies(*))`)
     .eq("is_active", true)
     .order("sort_order");
   return data ?? [];
@@ -16,9 +15,8 @@ export async function getServices() {
 export async function getServiceBySlug(slug: string) {
   const supabase = await createClient();
   const { data } = await supabase
-    .schema("website")
-    .from("services")
-    .select(`*, service_capabilities(*), service_technologies(technology_id, technologies(*))`)
+    .from("edoscentre_services")
+    .select(`*, edoscentre_service_capabilities(*), edoscentre_service_technologies(technology_id, edoscentre_technologies(*))`)
     .eq("slug", slug)
     .eq("is_active", true)
     .single();
@@ -29,9 +27,8 @@ export async function getServiceBySlug(slug: string) {
 export async function getIndustries() {
   const supabase = await createClient();
   const { data } = await supabase
-    .schema("website")
-    .from("industries")
-    .select(`*, industry_challenges(*), industry_solutions(*), industry_outcomes(*), industry_technologies(technology_id, technologies(*))`)
+    .from("edoscentre_industries")
+    .select(`*, edoscentre_industry_challenges(*), edoscentre_industry_solutions(*), edoscentre_industry_outcomes(*), edoscentre_industry_technologies(technology_id, edoscentre_technologies(*))`)
     .eq("is_active", true)
     .order("sort_order");
   return data ?? [];
@@ -40,9 +37,8 @@ export async function getIndustries() {
 export async function getIndustryBySlug(slug: string) {
   const supabase = await createClient();
   const { data } = await supabase
-    .schema("website")
-    .from("industries")
-    .select(`*, industry_challenges(*), industry_solutions(*), industry_outcomes(*), industry_technologies(technology_id, technologies(*))`)
+    .from("edoscentre_industries")
+    .select(`*, edoscentre_industry_challenges(*), edoscentre_industry_solutions(*), edoscentre_industry_outcomes(*), edoscentre_industry_technologies(technology_id, edoscentre_technologies(*))`)
     .eq("slug", slug)
     .eq("is_active", true)
     .single();
@@ -53,9 +49,8 @@ export async function getIndustryBySlug(slug: string) {
 export async function getCaseStudies({ featured = false, limit = 12 } = {}) {
   const supabase = await createClient();
   let q = supabase
-    .schema("website")
-    .from("case_studies")
-    .select(`*, case_study_kpis(*), case_study_technologies(technology_id, technologies(*)), industries(id, name, slug, icon)`)
+    .from("edoscentre_case_studies")
+    .select(`*, edoscentre_case_study_kpis(*), edoscentre_case_study_technologies(technology_id, edoscentre_technologies(*)), edoscentre_industries(id, name, slug, icon)`)
     .eq("is_published", true)
     .order("sort_order")
     .limit(limit);
@@ -67,9 +62,8 @@ export async function getCaseStudies({ featured = false, limit = 12 } = {}) {
 export async function getCaseStudyBySlug(slug: string) {
   const supabase = await createClient();
   const { data } = await supabase
-    .schema("website")
-    .from("case_studies")
-    .select(`*, case_study_kpis(*), case_study_technologies(technology_id, technologies(*)), industries(id, name, slug)`)
+    .from("edoscentre_case_studies")
+    .select(`*, edoscentre_case_study_kpis(*), edoscentre_case_study_technologies(technology_id, edoscentre_technologies(*)), edoscentre_industries(id, name, slug)`)
     .eq("slug", slug)
     .eq("is_published", true)
     .single();
@@ -81,21 +75,19 @@ export async function getBlogPosts({ limit = 9, categorySlug }: { limit?: number
   const supabase = await createClient();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let q: any = supabase
-    .schema("website")
-    .from("v_blog_posts_published")
+    .from("edoscentre_v_blog_posts_published")
     .select("*")
     .limit(limit);
   if (categorySlug) q = q.eq("category_slug", categorySlug);
   const { data } = await q;
-  return (data ?? []) as Database["website"]["Views"]["v_blog_posts_published"]["Row"][];
+  return (data ?? []) as Database["public"]["Views"]["edoscentre_v_blog_posts_published"]["Row"][];
 }
 
 export async function getBlogPostBySlug(slug: string) {
   const supabase = await createClient();
   const { data } = await supabase
-    .schema("website")
-    .from("blog_posts")
-    .select(`*, blog_categories(*), blog_post_tags(blog_tags(*))`)
+    .from("edoscentre_blog_posts")
+    .select(`*, edoscentre_blog_categories(*), edoscentre_blog_post_tags(edoscentre_blog_tags(*))`)
     .eq("slug", slug)
     .eq("is_published", true)
     .single();
@@ -105,8 +97,7 @@ export async function getBlogPostBySlug(slug: string) {
 export async function getFeaturedBlogPosts(limit = 3) {
   const supabase = await createClient();
   const { data } = await supabase
-    .schema("website")
-    .from("v_blog_posts_published")
+    .from("edoscentre_v_blog_posts_published")
     .select("*")
     .eq("is_featured" as never, true)
     .limit(limit);
@@ -117,8 +108,7 @@ export async function getFeaturedBlogPosts(limit = 3) {
 export async function getMetrics() {
   const supabase = await createClient();
   const { data } = await supabase
-    .schema("website")
-    .from("metrics")
+    .from("edoscentre_metrics")
     .select("*")
     .eq("is_active", true)
     .order("sort_order");
@@ -129,8 +119,7 @@ export async function getMetrics() {
 export async function getTeamMembers({ leadershipOnly = false } = {}) {
   const supabase = await createClient();
   let q = supabase
-    .schema("website")
-    .from("team_members")
+    .from("edoscentre_team_members")
     .select("*")
     .eq("is_active", true)
     .order("sort_order");
@@ -143,8 +132,7 @@ export async function getTeamMembers({ leadershipOnly = false } = {}) {
 export async function getTestimonials({ featured = false } = {}) {
   const supabase = await createClient();
   let q = supabase
-    .schema("website")
-    .from("testimonials")
+    .from("edoscentre_testimonials")
     .select("*")
     .eq("is_active", true)
     .order("sort_order");
@@ -157,9 +145,8 @@ export async function getTestimonials({ featured = false } = {}) {
 export async function getPlatformLayers() {
   const supabase = await createClient();
   const { data } = await supabase
-    .schema("website")
-    .from("platform_layers")
-    .select(`*, platform_layer_tools(*, technologies(*))`)
+    .from("edoscentre_platform_layers")
+    .select(`*, edoscentre_platform_layer_tools(*, edoscentre_technologies(*))`)
     .eq("is_active", true)
     .order("layer_number");
   return data ?? [];
@@ -169,9 +156,8 @@ export async function getPlatformLayers() {
 export async function getResources({ limit = 12, type }: { limit?: number; type?: string } = {}) {
   const supabase = await createClient();
   let q = supabase
-    .schema("website")
-    .from("resources")
-    .select(`*, industries(id, name, slug)`)
+    .from("edoscentre_resources")
+    .select(`*, edoscentre_industries(id, name, slug)`)
     .eq("is_published", true)
     .order("published_at", { ascending: false })
     .limit(limit);
@@ -184,9 +170,8 @@ export async function getResources({ limit = 12, type }: { limit?: number; type?
 export async function getFaqs() {
   const supabase = await createClient();
   const { data } = await supabase
-    .schema("website")
-    .from("faqs")
-    .select(`*, faq_categories(*)`)
+    .from("edoscentre_faqs")
+    .select(`*, edoscentre_faq_categories(*)`)
     .eq("is_active", true)
     .order("sort_order");
   return data ?? [];
@@ -196,9 +181,8 @@ export async function getFaqs() {
 export async function getTechnologies({ featured = false } = {}) {
   const supabase = await createClient();
   let q = supabase
-    .schema("website")
-    .from("technologies")
-    .select(`*, technology_categories(*)`)
+    .from("edoscentre_technologies")
+    .select(`*, edoscentre_technology_categories(*)`)
     .order("sort_order");
   if (featured) q = q.eq("is_featured", true);
   const { data } = await q;

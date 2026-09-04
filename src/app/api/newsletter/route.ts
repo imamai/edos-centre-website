@@ -14,8 +14,8 @@ export async function POST(req: NextRequest) {
     const supabase = await createServiceClient();
 
     const { error } = await supabase
-      .schema("website")
-      .from("newsletter_subscribers")
+      .schema("public")
+      .from("edoscentre_newsletter_subscribers")
       .upsert(
         {
           email:      email.toLowerCase().trim(),

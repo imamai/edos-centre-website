@@ -23,8 +23,8 @@ export async function POST(req: NextRequest) {
     const supabase = await createServiceClient();
 
     const { error } = await supabase
-      .schema("website")
-      .from("consultation_bookings")
+      .schema("public")
+      .from("edoscentre_consultation_bookings")
       .insert({
         full_name:       full_name.trim(),
         email:           email.toLowerCase().trim(),
