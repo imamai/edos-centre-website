@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { NAV_ITEMS, COMING_SOON_ITEMS } from "@/components/admin/nav-items";
 import EdosLogoMark from "@/components/ui/EdosLogoMark";
 
-export default function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
+export default function Sidebar({ onNavigate, unreadCount = 0 }: { onNavigate?: () => void; unreadCount?: number }) {
   const pathname = usePathname();
 
   return (
@@ -30,7 +30,12 @@ export default function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
               )}
             >
               <item.icon className="h-4.5 w-4.5" />
-              {item.label}
+              <span className="flex-1">{item.label}</span>
+              {item.href === "/admin/notifications" && unreadCount > 0 && (
+                <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-semibold text-white">
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
+              )}
             </Link>
           );
         })}

@@ -290,6 +290,27 @@ export async function getSslCertificates(): Promise<SslCertificateWithRelations[
   return (data ?? []) as unknown as SslCertificateWithRelations[];
 }
 
+export async function getNotifications(recipientId: string, limit = 50) {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("edoscentreadmin_notifications")
+    .select("*")
+    .eq("recipient_id", recipientId)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  return data ?? [];
+}
+
+export async function getUnreadNotificationCount(recipientId: string) {
+  const supabase = await createClient();
+  const { count } = await supabase
+    .from("edoscentreadmin_notifications")
+    .select("*", { count: "exact", head: true })
+    .eq("recipient_id", recipientId)
+    .eq("is_read", false);
+  return count ?? 0;
+}
+
 export type AttentionItem =
   | { type: "website"; id: string; label: string; detail: string | null; status: string; href: string }
   | { type: "domain"; id: string; label: string; detail: string; expired: boolean; href: string }

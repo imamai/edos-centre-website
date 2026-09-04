@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { getAdminUser } from "@/lib/admin/auth";
+import { getUnreadNotificationCount } from "@/lib/admin/queries";
 import AdminShell from "@/components/admin/AdminShell";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -7,5 +8,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
   if (!adminUser || !adminUser.is_active) redirect("/admin/login");
   if (adminUser.must_change_password) redirect("/admin/change-password");
 
-  return <AdminShell adminUser={adminUser}>{children}</AdminShell>;
+  const unreadCount = await getUnreadNotificationCount(adminUser.id);
+
+  return (
+    <AdminShell adminUser={adminUser} unreadCount={unreadCount}>
+      {children}
+    </AdminShell>
+  );
 }

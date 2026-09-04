@@ -506,6 +506,21 @@ export interface Database {
         };
         Relationships: [];
       };
+      edoscentreadmin_notifications: {
+        Row: {
+          id: string; recipient_id: string; type: string; severity: string; title: string;
+          message: string | null; link: string | null; dedup_key: string; is_read: boolean; created_at: string;
+        };
+        Insert: {
+          id?: string; recipient_id: string; type: string; severity?: string; title: string;
+          message?: string | null; link?: string | null; dedup_key: string; is_read?: boolean;
+        };
+        Update: {
+          id?: string; recipient_id?: string; type?: string; severity?: string; title?: string;
+          message?: string | null; link?: string | null; dedup_key?: string; is_read?: boolean;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       edoscentre_v_blog_posts_published: {
