@@ -15,6 +15,9 @@ const STATUS_STYLES: Record<string, string> = {
   read: "bg-slate-100 text-slate-600 ring-slate-500/20",
   replied: "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
   closed: "bg-slate-100 text-slate-500 ring-slate-500/20",
+  completed: "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
+  failed: "bg-red-50 text-red-700 ring-red-600/20",
+  cancelled: "bg-slate-100 text-slate-500 ring-slate-500/20",
 };
 
 export function StatusBadge({ status, className }: { status: string; className?: string }) {

@@ -522,6 +522,28 @@ export interface Database {
         };
         Relationships: [];
       };
+      edoscentreadmin_mpesa_transactions: {
+        Row: {
+          id: string; invoice_id: string; phone_number: string; amount: number;
+          merchant_request_id: string | null; checkout_request_id: string | null; status: string;
+          result_code: string | null; result_desc: string | null; mpesa_receipt_number: string | null;
+          transaction_date: string | null; payment_id: string | null; initiated_by: string | null;
+          created_at: string; updated_at: string;
+        };
+        Insert: {
+          id?: string; invoice_id: string; phone_number: string; amount: number;
+          merchant_request_id?: string | null; checkout_request_id?: string | null; status?: string;
+          result_code?: string | null; result_desc?: string | null; mpesa_receipt_number?: string | null;
+          transaction_date?: string | null; payment_id?: string | null; initiated_by?: string | null;
+        };
+        Update: {
+          id?: string; invoice_id?: string; phone_number?: string; amount?: number;
+          merchant_request_id?: string | null; checkout_request_id?: string | null; status?: string;
+          result_code?: string | null; result_desc?: string | null; mpesa_receipt_number?: string | null;
+          transaction_date?: string | null; payment_id?: string | null; initiated_by?: string | null;
+        };
+        Relationships: [];
+      };
       edoscentreadmin_notifications: {
         Row: {
           id: string; recipient_id: string; type: string; severity: string; title: string;

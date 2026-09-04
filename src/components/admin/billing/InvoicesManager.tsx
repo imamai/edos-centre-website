@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Wallet } from "lucide-react";
+import { Wallet, Smartphone, RefreshCw } from "lucide-react";
 import EntityManager from "@/components/admin/cms/EntityManager";
 import { StatusBadge } from "@/components/admin/ui/Badge";
 import { Input, Textarea, Label, Select } from "@/components/admin/ui/Input";
@@ -11,6 +11,7 @@ import { Button } from "@/components/admin/ui/Button";
 import { Drawer } from "@/components/admin/ui/Drawer";
 import { Card } from "@/components/admin/ui/Card";
 import { upsertInvoice, deleteInvoice, recordPayment } from "@/lib/admin/actions/invoice-actions";
+import { initiateMpesaPayment, checkMpesaTransactionStatus } from "@/lib/admin/actions/mpesa-actions";
 import { formatDate } from "@/lib/utils";
 import type { Database } from "@/types/database.types";
 import type { InvoiceWithRelations, PaymentWithRelations } from "@/lib/admin/queries";
@@ -18,6 +19,7 @@ import type { InvoiceWithRelations, PaymentWithRelations } from "@/lib/admin/que
 type Client = Database["public"]["Tables"]["edoscentreadmin_clients"]["Row"];
 type Website = Database["public"]["Tables"]["edoscentreadmin_websites"]["Row"];
 type Subscription = Database["public"]["Tables"]["edoscentreadmin_subscriptions"]["Row"];
+type MpesaTransaction = Database["public"]["Tables"]["edoscentreadmin_mpesa_transactions"]["Row"];
 
 const INVOICE_STATUSES = ["draft", "sent", "pending", "paid", "partially_paid", "overdue", "cancelled"];
 const PAYMENT_METHODS = ["mpesa", "bank", "card", "paypal", "cash", "other"];
@@ -28,16 +30,20 @@ export default function InvoicesManager({
   clients,
   websites,
   subscriptions,
+  mpesaTransactions,
 }: {
   invoices: InvoiceWithRelations[];
   payments: PaymentWithRelations[];
   clients: Client[];
   websites: Website[];
   subscriptions: Subscription[];
+  mpesaTransactions: MpesaTransaction[];
 }) {
   const router = useRouter();
   const [paymentInvoice, setPaymentInvoice] = useState<InvoiceWithRelations | null>(null);
+  const [mpesaInvoice, setMpesaInvoice] = useState<InvoiceWithRelations | null>(null);
   const [pending, setPending] = useState(false);
+  const [checkingId, setCheckingId] = useState<string | null>(null);
 
   async function onRecordPayment(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -51,6 +57,36 @@ export default function InvoicesManager({
       toast.error(err instanceof Error ? err.message : "Unable to record payment.");
     } finally {
       setPending(false);
+    }
+  }
+
+  async function onSendMpesaRequest(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setPending(true);
+    try {
+      const result = await initiateMpesaPayment(new FormData(e.currentTarget));
+      toast.success(result.customerMessage || "STK push sent — ask the client to check their phone.");
+      setMpesaInvoice(null);
+      router.refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Unable to send M-Pesa request.");
+    } finally {
+      setPending(false);
+    }
+  }
+
+  async function onCheckStatus(txnId: string) {
+    setCheckingId(txnId);
+    try {
+      const result = await checkMpesaTransactionStatus(txnId);
+      if (result.status === "pending") toast.info("Still pending — the client hasn't completed it yet.");
+      else if (result.status === "completed") toast.success("Payment confirmed.");
+      else toast.error(`Failed: ${"reason" in result ? result.reason : result.status}`);
+      router.refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Unable to check status.");
+    } finally {
+      setCheckingId(null);
     }
   }
 
@@ -79,12 +115,20 @@ export default function InvoicesManager({
             header: "",
             render: (i) =>
               i.status !== "paid" && i.status !== "cancelled" ? (
-                <button
-                  onClick={() => setPaymentInvoice(i)}
-                  className="flex items-center gap-1 rounded-lg border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50"
-                >
-                  <Wallet className="h-3.5 w-3.5" /> Record payment
-                </button>
+                <div className="flex justify-end gap-1.5">
+                  <button
+                    onClick={() => setMpesaInvoice(i)}
+                    className="flex items-center gap-1 rounded-lg border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50"
+                  >
+                    <Smartphone className="h-3.5 w-3.5" /> M-Pesa
+                  </button>
+                  <button
+                    onClick={() => setPaymentInvoice(i)}
+                    className="flex items-center gap-1 rounded-lg border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50"
+                  >
+                    <Wallet className="h-3.5 w-3.5" /> Record payment
+                  </button>
+                </div>
               ) : null,
           },
         ]}
@@ -221,6 +265,83 @@ export default function InvoicesManager({
           </div>
         </Card>
       </div>
+
+      <div>
+        <h2 className="text-lg font-medium text-slate-900">M-Pesa requests</h2>
+        <p className="mt-1 text-sm text-slate-500">Every STK push sent, and whether the client completed it.</p>
+        <Card className="mt-4 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-slate-50 text-xs font-medium uppercase tracking-wider text-slate-500">
+                <tr>
+                  <th className="px-5 py-3">Phone</th>
+                  <th className="px-5 py-3">Amount</th>
+                  <th className="px-5 py-3">Status</th>
+                  <th className="px-5 py-3">Sent</th>
+                  <th className="px-5 py-3" />
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {mpesaTransactions.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="px-5 py-8 text-center text-slate-400">
+                      No M-Pesa requests sent yet.
+                    </td>
+                  </tr>
+                ) : (
+                  mpesaTransactions.map((t) => (
+                    <tr key={t.id} className="hover:bg-slate-50">
+                      <td className="px-5 py-3 font-mono text-xs">{t.phone_number}</td>
+                      <td className="px-5 py-3">KES {Number(t.amount).toLocaleString()}</td>
+                      <td className="px-5 py-3">
+                        <StatusBadge status={t.status} />
+                      </td>
+                      <td className="px-5 py-3 text-xs text-slate-400">{formatDate(t.created_at)}</td>
+                      <td className="px-5 py-3 text-right">
+                        {t.status === "pending" && (
+                          <button
+                            onClick={() => onCheckStatus(t.id)}
+                            disabled={checkingId === t.id}
+                            className="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50"
+                          >
+                            <RefreshCw className={`h-3.5 w-3.5 ${checkingId === t.id ? "animate-spin" : ""}`} /> Check status
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      </div>
+
+      <Drawer
+        open={!!mpesaInvoice}
+        onOpenChange={(open) => !open && setMpesaInvoice(null)}
+        title={`Send M-Pesa request — ${mpesaInvoice?.invoice_number ?? ""}`}
+        description={mpesaInvoice ? `Balance due: ${mpesaInvoice.currency} ${Number(mpesaInvoice.total).toLocaleString()}` : undefined}
+      >
+        {mpesaInvoice && (
+          <form onSubmit={onSendMpesaRequest} className="space-y-4">
+            <input type="hidden" name="invoice_id" value={mpesaInvoice.id} />
+            <div>
+              <Label htmlFor="phone">Client phone number</Label>
+              <Input id="phone" name="phone" required placeholder="07XXXXXXXX" />
+              <p className="mt-1 text-xs text-slate-400">The client will get a PIN prompt on this number for the full outstanding balance.</p>
+            </div>
+            <div className="flex justify-end gap-3 pt-2">
+              <Button type="button" variant="secondary" onClick={() => setMpesaInvoice(null)}>
+                Cancel
+              </Button>
+              <Button type="submit" loading={pending}>
+                Send request
+              </Button>
+            </div>
+          </form>
+        )}
+      </Drawer>
 
       <Drawer
         open={!!paymentInvoice}

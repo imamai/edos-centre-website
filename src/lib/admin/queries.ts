@@ -230,6 +230,15 @@ export async function getPayments(): Promise<PaymentWithRelations[]> {
   return (data ?? []) as unknown as PaymentWithRelations[];
 }
 
+export async function getMpesaTransactions() {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("edoscentreadmin_mpesa_transactions")
+    .select("*")
+    .order("created_at", { ascending: false });
+  return data ?? [];
+}
+
 export async function getBillingStats() {
   const supabase = await createClient();
   const [{ data: activeSubs }, { data: unpaidInvoices }, { data: paidThisMonth }] = await Promise.all([

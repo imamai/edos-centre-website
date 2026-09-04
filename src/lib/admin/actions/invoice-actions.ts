@@ -5,6 +5,7 @@ import { z } from "zod";
 import { requireAdmin } from "@/lib/admin/auth";
 import { logAudit } from "@/lib/admin/audit";
 import { createServiceClient } from "@/lib/supabase/server";
+import { applyPaymentCascade } from "@/lib/admin/billing-cascade";
 
 const invoiceSchema = z.object({
   client_id: z.string().min(1),
@@ -68,8 +69,6 @@ export async function deleteInvoice(id: string, invoiceNumber: string) {
   revalidatePath("/admin/invoices");
 }
 
-const CYCLE_MONTHS: Record<string, number> = { monthly: 1, quarterly: 3, semiannual: 6, annual: 12, custom: 1 };
-
 const paymentSchema = z.object({
   invoice_id: z.string().min(1),
   amount: z.coerce.number().min(0.01),
@@ -80,99 +79,23 @@ const paymentSchema = z.object({
 });
 
 /**
- * Records a payment and cascades the real consequences: recompute invoice status
- * from actual payments received, and — only once the invoice is fully paid —
- * extend the linked subscription's renewal date and reactivate the website if it
- * had been suspended for non-payment. Nothing here fabricates a "paid" state;
- * every transition is derived from the payments actually on file.
+ * Records a manual payment via the shared cascade (see billing-cascade.ts) — the
+ * same logic the M-Pesa callback uses, so a manual entry and an automated M-Pesa
+ * payment behave identically. Nothing here fabricates a "paid" state; every
+ * transition is derived from the payments actually on file.
  */
 export async function recordPayment(formData: FormData) {
   const admin = await requireAdmin("edos-centre");
   const parsed = paymentSchema.parse(Object.fromEntries(formData));
 
-  const supabase = await createServiceClient();
-
-  const { data: invoice, error: invoiceError } = await supabase
-    .from("edoscentreadmin_invoices")
-    .select("id, total, subscription_id, website_id, invoice_number")
-    .eq("id", parsed.invoice_id)
-    .single();
-  if (invoiceError) throw new Error(invoiceError.message);
-
-  const { error: paymentError } = await supabase.from("edoscentreadmin_payments").insert({
-    invoice_id: parsed.invoice_id,
+  await applyPaymentCascade({
+    invoiceId: parsed.invoice_id,
     amount: parsed.amount,
-    payment_method: parsed.payment_method,
-    transaction_reference: parsed.transaction_reference || null,
-    payment_date: parsed.payment_date,
-    status: "completed",
-    notes: parsed.notes || null,
-    recorded_by: admin.id,
-  });
-  if (paymentError) throw new Error(paymentError.message);
-
-  await logAudit({
+    paymentMethod: parsed.payment_method,
+    transactionReference: parsed.transaction_reference || null,
+    paymentDate: parsed.payment_date,
+    recordedBy: admin.id,
     actorId: admin.id,
-    action: "payment_recorded",
-    metadata: { invoice_number: invoice.invoice_number, amount: parsed.amount, method: parsed.payment_method },
+    notes: parsed.notes || null,
   });
-
-  const { data: payments } = await supabase
-    .from("edoscentreadmin_payments")
-    .select("amount")
-    .eq("invoice_id", parsed.invoice_id)
-    .eq("status", "completed");
-  const totalPaid = (payments ?? []).reduce((sum, p) => sum + Number(p.amount), 0);
-
-  const newInvoiceStatus = totalPaid >= Number(invoice.total) ? "paid" : totalPaid > 0 ? "partially_paid" : "pending";
-  await supabase.from("edoscentreadmin_invoices").update({ status: newInvoiceStatus }).eq("id", invoice.id);
-
-  if (newInvoiceStatus === "paid" && invoice.subscription_id) {
-    const { data: subscription } = await supabase
-      .from("edoscentreadmin_subscriptions")
-      .select("id, billing_cycle, renewal_date, website_id")
-      .eq("id", invoice.subscription_id)
-      .single();
-
-    if (subscription) {
-      const months = CYCLE_MONTHS[subscription.billing_cycle] ?? 1;
-      const base = subscription.renewal_date && new Date(subscription.renewal_date) > new Date() ? new Date(subscription.renewal_date) : new Date();
-      base.setMonth(base.getMonth() + months);
-      const newRenewalDate = base.toISOString().slice(0, 10);
-
-      await supabase
-        .from("edoscentreadmin_subscriptions")
-        .update({ status: "active", renewal_date: newRenewalDate })
-        .eq("id", subscription.id);
-
-      await logAudit({ actorId: admin.id, action: "subscription_renewed", websiteId: subscription.website_id, metadata: { renewal_date: newRenewalDate } });
-
-      const { data: website } = await supabase
-        .from("edoscentreadmin_websites")
-        .select("id, slug, status")
-        .eq("id", subscription.website_id)
-        .single();
-
-      if (website && website.status === "suspended") {
-        await supabase
-          .from("edoscentreadmin_websites")
-          .update({
-            status: "active",
-            status_reason: null,
-            status_message: null,
-            status_changed_at: new Date().toISOString(),
-            status_changed_by: admin.id,
-          })
-          .eq("id", website.id);
-
-        await logAudit({ actorId: admin.id, action: "website_activated", websiteId: website.id, metadata: { reason: "payment_received" } });
-        revalidatePath("/", "layout");
-      }
-    }
-  }
-
-  revalidatePath("/admin/invoices");
-  revalidatePath("/admin/subscriptions");
-  revalidatePath("/admin/websites");
-  revalidatePath("/admin");
 }
