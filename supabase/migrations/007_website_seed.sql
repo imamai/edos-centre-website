@@ -9,7 +9,7 @@ INSERT INTO website.site_settings (key, value, description) VALUES
   ('site_title',           '"Edos Centre – Embrace Data for Optimum Solutions"',    'Browser title tag'),
   ('site_description',     '"East Africa''s premier Data Analytics, Data Engineering, SaaS & Digital Transformation partner."', 'Meta description'),
   ('primary_color',        '"#E31E24"', 'Brand red'),
-  ('contact_email',        '"hello@edoscentre.com"', 'Public contact email'),
+  ('contact_email',        '"info@edoscentre.co.ke"', 'Public contact email'),
   ('contact_phone',        '"+254 700 000 000"', 'Public phone number'),
   ('contact_location',     '"Nairobi, Kenya"', 'Office location'),
   ('twitter_handle',       '"@edoscentre"', 'Twitter/X handle'),

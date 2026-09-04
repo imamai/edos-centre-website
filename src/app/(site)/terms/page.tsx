@@ -31,7 +31,7 @@ export default function TermsPage() {
             <div>
               <h2 className="font-display text-2xl font-bold text-brand-navy mb-4">1. Agreement to Terms</h2>
               <p className="leading-relaxed">
-                By accessing or using the Edos Centre website (edoscentre.com) or engaging our
+                By accessing or using the Edos Centre website (edoscentre.co.ke) or engaging our
                 professional services, you agree to be bound by these Terms of Service. If you do
                 not agree to these terms, please do not use our website or services.
               </p>
@@ -129,8 +129,8 @@ export default function TermsPage() {
               <h2 className="font-display text-2xl font-bold text-brand-navy mb-4">10. Contact</h2>
               <p className="leading-relaxed">
                 For questions about these Terms, contact us at:{" "}
-                <a href="mailto:legal@edoscentre.com" className="text-brand-red hover:underline">
-                  legal@edoscentre.com
+                <a href="mailto:legal@edoscentre.co.ke" className="text-brand-red hover:underline">
+                  legal@edoscentre.co.ke
                 </a>
                 <br />
                 Edos Centre, Nairobi, Kenya.

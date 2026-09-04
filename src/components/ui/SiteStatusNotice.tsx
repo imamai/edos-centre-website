@@ -28,8 +28,8 @@ export default function SiteStatusNotice({
       {returnAt && (
         <p className="mt-2 text-sm text-slate-400">Expected back: {new Date(returnAt).toLocaleString()}</p>
       )}
-      <a href="mailto:info@edoscentre.com" className="mt-8 flex items-center gap-2 text-sm text-slate-400 hover:text-white">
-        <Mail className="h-4 w-4" /> info@edoscentre.com
+      <a href="mailto:info@edoscentre.co.ke" className="mt-8 flex items-center gap-2 text-sm text-slate-400 hover:text-white">
+        <Mail className="h-4 w-4" /> info@edoscentre.co.ke
       </a>
     </div>
   );

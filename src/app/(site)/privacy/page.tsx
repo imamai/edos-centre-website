@@ -106,8 +106,8 @@ export default function PrivacyPage() {
               </ul>
               <p className="leading-relaxed mt-4">
                 To exercise these rights, contact us at{" "}
-                <a href="mailto:privacy@edoscentre.com" className="text-brand-red hover:underline">
-                  privacy@edoscentre.com
+                <a href="mailto:privacy@edoscentre.co.ke" className="text-brand-red hover:underline">
+                  privacy@edoscentre.co.ke
                 </a>.
               </p>
             </div>
@@ -144,8 +144,8 @@ export default function PrivacyPage() {
               <h2 className="font-display text-2xl font-bold text-brand-navy mb-4">10. Contact</h2>
               <p className="leading-relaxed">
                 For privacy enquiries, contact our Data Protection Officer at:{" "}
-                <a href="mailto:privacy@edoscentre.com" className="text-brand-red hover:underline">
-                  privacy@edoscentre.com
+                <a href="mailto:privacy@edoscentre.co.ke" className="text-brand-red hover:underline">
+                  privacy@edoscentre.co.ke
                 </a>
                 <br />
                 Edos Centre, Nairobi, Kenya.

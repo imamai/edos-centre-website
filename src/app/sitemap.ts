@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://edoscentre.com";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://edoscentre.co.ke";
 
 const SERVICE_SLUGS = [
   "data-analytics",
