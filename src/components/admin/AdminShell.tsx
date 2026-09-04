@@ -55,8 +55,6 @@ export default function AdminShell({
             <Menu className="h-5 w-5" />
           </button>
 
-          <div className="hidden text-sm text-slate-400 lg:block">EDOS Centre</div>
-
           <div className="flex items-center gap-4">
             <Link href="/admin/notifications" className="relative text-slate-500 hover:text-slate-800" aria-label="Notifications">
               <Bell className="h-5 w-5" />
