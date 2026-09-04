@@ -93,6 +93,7 @@ export interface Database {
           client_logo_url: string | null; industry_id: string | null;
           tagline: string | null; challenge: string | null; solution: string | null;
           impact: string | null; cover_image_url: string | null; result_summary: string | null;
+          duration: string | null; project_year: string | null;
           is_featured: boolean; is_published: boolean; published_at: string | null;
           sort_order: number; seo_title: string | null; seo_description: string | null;
           created_at: string; updated_at: string;

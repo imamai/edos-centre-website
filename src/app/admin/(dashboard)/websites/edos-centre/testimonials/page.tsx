@@ -1,9 +1,13 @@
-import { getTestimonialsAdmin, getIndustriesAdmin } from "@/lib/admin/queries";
+import { getTestimonialsAdmin, getIndustriesAdmin, getCaseStudiesAdmin } from "@/lib/admin/queries";
 import TestimonialsManager from "@/components/admin/cms/TestimonialsManager";
 
 export const metadata = { title: "Testimonials — EDOS Control Centre" };
 
 export default async function TestimonialsPage() {
-  const [testimonials, industries] = await Promise.all([getTestimonialsAdmin(), getIndustriesAdmin()]);
-  return <TestimonialsManager testimonials={testimonials} industries={industries} />;
+  const [testimonials, industries, caseStudies] = await Promise.all([
+    getTestimonialsAdmin(),
+    getIndustriesAdmin(),
+    getCaseStudiesAdmin(),
+  ]);
+  return <TestimonialsManager testimonials={testimonials} industries={industries} caseStudies={caseStudies} />;
 }

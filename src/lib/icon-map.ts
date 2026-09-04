@@ -52,3 +52,16 @@ export const INDUSTRY_ACCENT: Record<string, string> = {
 export function getIndustryAccent(slug: string): string {
   return INDUSTRY_ACCENT[slug] ?? DEFAULT_ACCENT;
 }
+
+export const CASE_STUDY_ACCENT: Record<string, string> = {
+  "county-health-information-system": "#E31E24",
+  "ngo-me-platform": "#6B5B95",
+  "agricultural-reporting-system": "#22c55e",
+  "school-management-system": "#f59e0b",
+  "enterprise-saas-platform": "#06b6d4",
+  "county-analytics-dashboard": "#2E234F",
+};
+
+export function getCaseStudyAccent(slug: string): string {
+  return CASE_STUDY_ACCENT[slug] ?? DEFAULT_ACCENT;
+}

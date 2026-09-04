@@ -85,6 +85,16 @@ export default function CaseStudiesManager({
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
+              <Label htmlFor="duration">Duration</Label>
+              <Input id="duration" name="duration" placeholder="8 months" defaultValue={editing?.duration ?? ""} />
+            </div>
+            <div>
+              <Label htmlFor="project_year">Year</Label>
+              <Input id="project_year" name="project_year" placeholder="2024" defaultValue={editing?.project_year ?? ""} />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
               <Label htmlFor="cover_image_url">Cover image URL</Label>
               <Input id="cover_image_url" name="cover_image_url" defaultValue={editing?.cover_image_url ?? ""} />
             </div>

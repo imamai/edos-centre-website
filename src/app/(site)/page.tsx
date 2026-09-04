@@ -8,10 +8,15 @@ import MetricsSection      from "@/components/sections/MetricsSection";
 import TestimonialsSection from "@/components/sections/TestimonialsSection";
 import ThoughtLeadership   from "@/components/sections/ThoughtLeadership";
 import CtaSection          from "@/components/sections/CtaSection";
-import { getMetrics, getPlatformLayers } from "@/lib/queries";
+import { getMetrics, getPlatformLayers, getCaseStudies, getTestimonials } from "@/lib/queries";
 
 export default async function HomePage() {
-  const [metrics, platformLayers] = await Promise.all([getMetrics(), getPlatformLayers()]);
+  const [metrics, platformLayers, caseStudies, testimonials] = await Promise.all([
+    getMetrics(),
+    getPlatformLayers(),
+    getCaseStudies(),
+    getTestimonials({ featured: true }),
+  ]);
 
   return (
     <>
@@ -21,8 +26,8 @@ export default async function HomePage() {
       <MetricsSection metrics={metrics} />
       <IndustriesSection />
       <TechEcosystem />
-      <SuccessStories />
-      <TestimonialsSection />
+      <SuccessStories caseStudies={caseStudies} />
+      <TestimonialsSection testimonials={testimonials} />
       <ThoughtLeadership />
       <CtaSection />
     </>

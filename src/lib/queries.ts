@@ -64,7 +64,59 @@ export async function getIndustryBySlug(slug: string): Promise<IndustryWithConte
 }
 
 // ── Case Studies ──────────────────────────────────────────────────────────────
-export async function getCaseStudies({ featured = false, limit = 12 } = {}) {
+export type CaseStudyData = {
+  id: string;
+  slug: string;
+  title: string;
+  client_name: string | null;
+  tagline: string | null;
+  challenge: string | null;
+  solution: string | null;
+  impact: string | null;
+  result_summary: string | null;
+  duration: string | null;
+  project_year: string | null;
+  industry: { id: string; name: string; slug: string; icon: string | null } | null;
+  kpis: { id: string; metric_label: string; metric_value: string; metric_unit: string | null }[];
+  technologies: { id: string; name: string }[];
+  testimonial: { quote: string; client_name: string } | null;
+};
+
+type CaseStudyRow = Database["public"]["Tables"]["edoscentre_case_studies"]["Row"] & {
+  edoscentre_case_study_kpis: Database["public"]["Tables"]["edoscentre_case_study_kpis"]["Row"][];
+  edoscentre_case_study_technologies: { edoscentre_technologies: Database["public"]["Tables"]["edoscentre_technologies"]["Row"] | null }[];
+  edoscentre_industries: { id: string; name: string; slug: string; icon: string | null } | null;
+  edoscentre_testimonials?: Database["public"]["Tables"]["edoscentre_testimonials"]["Row"][];
+};
+
+function toCaseStudyData(cs: CaseStudyRow): CaseStudyData {
+  return {
+    id: cs.id,
+    slug: cs.slug,
+    title: cs.title,
+    client_name: cs.client_name,
+    tagline: cs.tagline,
+    challenge: cs.challenge,
+    solution: cs.solution,
+    impact: cs.impact,
+    result_summary: cs.result_summary,
+    duration: cs.duration,
+    project_year: cs.project_year,
+    industry: cs.edoscentre_industries,
+    kpis: [...cs.edoscentre_case_study_kpis]
+      .sort((a, b) => a.sort_order - b.sort_order)
+      .map((k) => ({ id: k.id, metric_label: k.metric_label, metric_value: k.metric_value, metric_unit: k.metric_unit })),
+    technologies: cs.edoscentre_case_study_technologies
+      .map((t) => t.edoscentre_technologies)
+      .filter((t): t is NonNullable<typeof t> => !!t)
+      .map((t) => ({ id: t.id, name: t.name })),
+    testimonial: cs.edoscentre_testimonials?.[0]
+      ? { quote: cs.edoscentre_testimonials[0].quote, client_name: cs.edoscentre_testimonials[0].client_name }
+      : null,
+  };
+}
+
+export async function getCaseStudies({ featured = false, limit = 12 } = {}): Promise<CaseStudyData[]> {
   const supabase = createStaticClient();
   let q = supabase
     .from("edoscentre_case_studies")
@@ -74,18 +126,20 @@ export async function getCaseStudies({ featured = false, limit = 12 } = {}) {
     .limit(limit);
   if (featured) q = q.eq("is_featured", true);
   const { data } = await q;
-  return data ?? [];
+  return ((data ?? []) as unknown as CaseStudyRow[]).map(toCaseStudyData);
 }
 
-export async function getCaseStudyBySlug(slug: string) {
+export async function getCaseStudyBySlug(slug: string): Promise<CaseStudyData | null> {
   const supabase = createStaticClient();
   const { data } = await supabase
     .from("edoscentre_case_studies")
-    .select(`*, edoscentre_case_study_kpis(*), edoscentre_case_study_technologies(technology_id, edoscentre_technologies(*)), edoscentre_industries(id, name, slug)`)
+    .select(
+      `*, edoscentre_case_study_kpis(*), edoscentre_case_study_technologies(technology_id, edoscentre_technologies(*)), edoscentre_industries(id, name, slug, icon), edoscentre_testimonials(*)`,
+    )
     .eq("slug", slug)
     .eq("is_published", true)
     .single();
-  return data;
+  return data ? toCaseStudyData(data as unknown as CaseStudyRow) : null;
 }
 
 // ── Blog ──────────────────────────────────────────────────────────────────────

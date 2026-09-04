@@ -9,8 +9,17 @@ import type { Database } from "@/types/database.types";
 
 type Testimonial = Database["public"]["Tables"]["edoscentre_testimonials"]["Row"];
 type Industry = Database["public"]["Tables"]["edoscentre_industries"]["Row"];
+type CaseStudy = Database["public"]["Tables"]["edoscentre_case_studies"]["Row"];
 
-export default function TestimonialsManager({ testimonials, industries }: { testimonials: Testimonial[]; industries: Industry[] }) {
+export default function TestimonialsManager({
+  testimonials,
+  industries,
+  caseStudies,
+}: {
+  testimonials: Testimonial[];
+  industries: Industry[];
+  caseStudies: CaseStudy[];
+}) {
   return (
     <EntityManager<Testimonial>
       title="Testimonials"
@@ -56,7 +65,7 @@ export default function TestimonialsManager({ testimonials, industries }: { test
               <Input id="client_logo" name="client_logo" defaultValue={editing?.client_logo ?? ""} />
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-3">
             <div>
               <Label htmlFor="industry_id">Industry</Label>
               <Select id="industry_id" name="industry_id" defaultValue={editing?.industry_id ?? ""}>
@@ -68,6 +77,19 @@ export default function TestimonialsManager({ testimonials, industries }: { test
                 ))}
               </Select>
             </div>
+            <div>
+              <Label htmlFor="case_study_id">Case study</Label>
+              <Select id="case_study_id" name="case_study_id" defaultValue={editing?.case_study_id ?? ""}>
+                <option value="">—</option>
+                {caseStudies.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.title}
+                  </option>
+                ))}
+              </Select>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
             <div>
               <Label htmlFor="rating">Rating (1-5)</Label>
               <Input id="rating" name="rating" type="number" min={1} max={5} defaultValue={editing?.rating ?? ""} />
