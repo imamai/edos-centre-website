@@ -19,6 +19,7 @@ export default function AdminShell({
   children: React.ReactNode;
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const isSuperAdmin = adminUser.role === "super_admin";
 
   return (
     <div className="flex min-h-screen bg-slate-50">
@@ -26,7 +27,7 @@ export default function AdminShell({
 
       {/* Desktop sidebar */}
       <div className="hidden lg:block">
-        <Sidebar unreadCount={unreadCount} />
+        <Sidebar unreadCount={unreadCount} isSuperAdmin={isSuperAdmin} />
       </div>
 
       {/* Mobile sidebar drawer */}
@@ -35,7 +36,7 @@ export default function AdminShell({
           <Dialog.Overlay className="fixed inset-0 z-40 bg-black/40 lg:hidden" />
           <Dialog.Content className="fixed inset-y-0 left-0 z-50 lg:hidden">
             <Dialog.Title className="sr-only">Navigation</Dialog.Title>
-            <Sidebar unreadCount={unreadCount} onNavigate={() => setMobileOpen(false)} />
+            <Sidebar unreadCount={unreadCount} isSuperAdmin={isSuperAdmin} onNavigate={() => setMobileOpen(false)} />
             <Dialog.Close className="absolute right-3 top-3 text-white/70 hover:text-white">
               <X className="h-5 w-5" />
             </Dialog.Close>

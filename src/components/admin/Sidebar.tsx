@@ -6,8 +6,17 @@ import { cn } from "@/lib/utils";
 import { NAV_ITEMS, COMING_SOON_ITEMS } from "@/components/admin/nav-items";
 import EdosLogoMark from "@/components/ui/EdosLogoMark";
 
-export default function Sidebar({ onNavigate, unreadCount = 0 }: { onNavigate?: () => void; unreadCount?: number }) {
+export default function Sidebar({
+  onNavigate,
+  unreadCount = 0,
+  isSuperAdmin = false,
+}: {
+  onNavigate?: () => void;
+  unreadCount?: number;
+  isSuperAdmin?: boolean;
+}) {
   const pathname = usePathname();
+  const items = NAV_ITEMS.filter((item) => !item.superAdminOnly || isSuperAdmin);
 
   return (
     <div className="flex h-full w-64 flex-col bg-[#1A1733] text-slate-200">
@@ -17,7 +26,7 @@ export default function Sidebar({ onNavigate, unreadCount = 0 }: { onNavigate?: 
       </div>
 
       <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
-        {NAV_ITEMS.map((item) => {
+        {items.map((item) => {
           const active = item.href === "/admin" ? pathname === "/admin" : pathname.startsWith(item.href);
           return (
             <Link

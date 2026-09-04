@@ -1,10 +1,11 @@
 import type { LucideIcon } from "lucide-react";
-import { LayoutDashboard, Globe, ScrollText, Users, Repeat, Receipt, Server, Bell, BarChart3, LifeBuoy, Settings } from "lucide-react";
+import { LayoutDashboard, Globe, ScrollText, Users, Repeat, Receipt, Server, Bell, BarChart3, UserCog, LifeBuoy, Settings } from "lucide-react";
 
 export interface NavItem {
   label: string;
   href: string;
   icon: LucideIcon;
+  superAdminOnly?: boolean;
 }
 
 export const NAV_ITEMS: NavItem[] = [
@@ -17,6 +18,7 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Reports", href: "/admin/reports", icon: BarChart3 },
   { label: "Notifications", href: "/admin/notifications", icon: Bell },
   { label: "Activity Logs", href: "/admin/activity-logs", icon: ScrollText },
+  { label: "Admin Users", href: "/admin/admin-users", icon: UserCog, superAdminOnly: true },
 ];
 
 /** Sections planned for later phases — shown so the platform's shape is visible, but not wired to real functionality yet. */

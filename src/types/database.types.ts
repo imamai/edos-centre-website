@@ -537,6 +537,7 @@ export interface Database {
     };
     Functions: {
       edoscentreadmin_next_invoice_number: { Args: Record<string, never>; Returns: string };
+      edoscentre_check_rate_limit: { Args: { p_key: string; p_limit: number; p_window_seconds: number }; Returns: boolean };
     };
     Enums: Record<string, never>;
   };

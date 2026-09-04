@@ -401,6 +401,19 @@ export async function getTopBlogPosts(limit = 8) {
   return data ?? [];
 }
 
+export type AdminUserWithWebsites = Database["public"]["Tables"]["edoscentreadmin_admin_users"]["Row"] & {
+  edoscentreadmin_admin_user_websites: { website_id: string }[];
+};
+
+export async function getAdminUsers(): Promise<AdminUserWithWebsites[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("edoscentreadmin_admin_users")
+    .select("*, edoscentreadmin_admin_user_websites(website_id)")
+    .order("created_at");
+  return (data ?? []) as unknown as AdminUserWithWebsites[];
+}
+
 export async function getNotifications(recipientId: string, limit = 50) {
   const supabase = await createClient();
   const { data } = await supabase
