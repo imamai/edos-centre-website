@@ -278,6 +278,234 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["edoscentre_media_assets"]["Insert"]>;
         Relationships: [];
       };
+      edoscentreadmin_websites: {
+        Row: {
+          id: string; slug: string; name: string; domain: string | null;
+          status: string; primary_admin_email: string | null; notes: string | null;
+          status_reason: string | null; status_message: string | null;
+          maintenance_return_at: string | null; status_changed_at: string | null;
+          status_changed_by: string | null;
+          created_at: string; updated_at: string;
+        };
+        Insert: {
+          id?: string; slug: string; name: string; domain?: string | null;
+          status?: string; primary_admin_email?: string | null; notes?: string | null;
+          status_reason?: string | null; status_message?: string | null;
+          maintenance_return_at?: string | null; status_changed_at?: string | null;
+          status_changed_by?: string | null;
+        };
+        Update: {
+          id?: string; slug?: string; name?: string; domain?: string | null;
+          status?: string; primary_admin_email?: string | null; notes?: string | null;
+          status_reason?: string | null; status_message?: string | null;
+          maintenance_return_at?: string | null; status_changed_at?: string | null;
+          status_changed_by?: string | null;
+        };
+        Relationships: [];
+      };
+      edoscentreadmin_admin_users: {
+        Row: {
+          id: string; email: string; full_name: string | null; role: string;
+          is_active: boolean; must_change_password: boolean;
+          last_login_at: string | null; created_at: string; updated_at: string;
+        };
+        Insert: {
+          id: string; email: string; full_name?: string | null; role?: string;
+          is_active?: boolean; must_change_password?: boolean; last_login_at?: string | null;
+        };
+        Update: {
+          id?: string; email?: string; full_name?: string | null; role?: string;
+          is_active?: boolean; must_change_password?: boolean; last_login_at?: string | null;
+        };
+        Relationships: [];
+      };
+      edoscentreadmin_admin_user_websites: {
+        Row: { admin_user_id: string; website_id: string; created_at: string };
+        Insert: { admin_user_id: string; website_id: string };
+        Update: { admin_user_id?: string; website_id?: string };
+        Relationships: [];
+      };
+      edoscentreadmin_audit_logs: {
+        Row: {
+          id: string; actor_id: string | null; action: string; website_id: string | null;
+          metadata: Json; ip_address: string | null; created_at: string;
+        };
+        Insert: {
+          id?: string; actor_id?: string | null; action: string; website_id?: string | null;
+          metadata?: Json; ip_address?: string | null;
+        };
+        Update: {
+          id?: string; actor_id?: string | null; action?: string; website_id?: string | null;
+          metadata?: Json; ip_address?: string | null;
+        };
+        Relationships: [];
+      };
+      edoscentreadmin_clients: {
+        Row: {
+          id: string; company_name: string; contact_person: string | null; email: string | null;
+          phone: string | null; address: string | null; notes: string | null;
+          created_at: string; updated_at: string;
+        };
+        Insert: {
+          id?: string; company_name: string; contact_person?: string | null; email?: string | null;
+          phone?: string | null; address?: string | null; notes?: string | null;
+        };
+        Update: {
+          id?: string; company_name?: string; contact_person?: string | null; email?: string | null;
+          phone?: string | null; address?: string | null; notes?: string | null;
+        };
+        Relationships: [];
+      };
+      edoscentreadmin_subscription_plans: {
+        Row: {
+          id: string; name: string; description: string | null;
+          monthly_price: number | null; quarterly_price: number | null;
+          semiannual_price: number | null; annual_price: number | null;
+          setup_fee: number; currency: string; features: string | null;
+          is_active: boolean; sort_order: number; created_at: string; updated_at: string;
+        };
+        Insert: {
+          id?: string; name: string; description?: string | null;
+          monthly_price?: number | null; quarterly_price?: number | null;
+          semiannual_price?: number | null; annual_price?: number | null;
+          setup_fee?: number; currency?: string; features?: string | null;
+          is_active?: boolean; sort_order?: number;
+        };
+        Update: {
+          id?: string; name?: string; description?: string | null;
+          monthly_price?: number | null; quarterly_price?: number | null;
+          semiannual_price?: number | null; annual_price?: number | null;
+          setup_fee?: number; currency?: string; features?: string | null;
+          is_active?: boolean; sort_order?: number;
+        };
+        Relationships: [];
+      };
+      edoscentreadmin_subscriptions: {
+        Row: {
+          id: string; website_id: string; client_id: string; plan_id: string | null;
+          billing_cycle: string; amount: number; currency: string; status: string;
+          start_date: string; renewal_date: string | null; grace_period_days: number;
+          auto_renew: boolean; notes: string | null; created_at: string; updated_at: string;
+        };
+        Insert: {
+          id?: string; website_id: string; client_id: string; plan_id?: string | null;
+          billing_cycle?: string; amount: number; currency?: string; status?: string;
+          start_date?: string; renewal_date?: string | null; grace_period_days?: number;
+          auto_renew?: boolean; notes?: string | null;
+        };
+        Update: {
+          id?: string; website_id?: string; client_id?: string; plan_id?: string | null;
+          billing_cycle?: string; amount?: number; currency?: string; status?: string;
+          start_date?: string; renewal_date?: string | null; grace_period_days?: number;
+          auto_renew?: boolean; notes?: string | null;
+        };
+        Relationships: [];
+      };
+      edoscentreadmin_invoices: {
+        Row: {
+          id: string; invoice_number: string; client_id: string; website_id: string | null;
+          subscription_id: string | null; issue_date: string; due_date: string;
+          amount: number; tax: number; discount: number; total: number; currency: string;
+          status: string; notes: string | null; created_at: string; updated_at: string;
+        };
+        Insert: {
+          id?: string; invoice_number: string; client_id: string; website_id?: string | null;
+          subscription_id?: string | null; issue_date?: string; due_date: string;
+          amount: number; tax?: number; discount?: number; total: number; currency?: string;
+          status?: string; notes?: string | null;
+        };
+        Update: {
+          id?: string; invoice_number?: string; client_id?: string; website_id?: string | null;
+          subscription_id?: string | null; issue_date?: string; due_date?: string;
+          amount?: number; tax?: number; discount?: number; total?: number; currency?: string;
+          status?: string; notes?: string | null;
+        };
+        Relationships: [];
+      };
+      edoscentreadmin_payments: {
+        Row: {
+          id: string; invoice_id: string; amount: number; currency: string;
+          payment_method: string; transaction_reference: string | null; payment_date: string;
+          status: string; notes: string | null; recorded_by: string | null; created_at: string;
+        };
+        Insert: {
+          id?: string; invoice_id: string; amount: number; currency?: string;
+          payment_method?: string; transaction_reference?: string | null; payment_date?: string;
+          status?: string; notes?: string | null; recorded_by?: string | null;
+        };
+        Update: {
+          id?: string; invoice_id?: string; amount?: number; currency?: string;
+          payment_method?: string; transaction_reference?: string | null; payment_date?: string;
+          status?: string; notes?: string | null; recorded_by?: string | null;
+        };
+        Relationships: [];
+      };
+      edoscentreadmin_hosting_details: {
+        Row: {
+          id: string; website_id: string; provider: string; plan: string | null;
+          server_ip: string | null; control_panel_url: string | null;
+          storage_limit_gb: number | null; bandwidth_limit_gb: number | null;
+          renewal_date: string | null; cost: number | null; currency: string;
+          auto_renew: boolean; notes: string | null; created_at: string; updated_at: string;
+        };
+        Insert: {
+          id?: string; website_id: string; provider: string; plan?: string | null;
+          server_ip?: string | null; control_panel_url?: string | null;
+          storage_limit_gb?: number | null; bandwidth_limit_gb?: number | null;
+          renewal_date?: string | null; cost?: number | null; currency?: string;
+          auto_renew?: boolean; notes?: string | null;
+        };
+        Update: {
+          id?: string; website_id?: string; provider?: string; plan?: string | null;
+          server_ip?: string | null; control_panel_url?: string | null;
+          storage_limit_gb?: number | null; bandwidth_limit_gb?: number | null;
+          renewal_date?: string | null; cost?: number | null; currency?: string;
+          auto_renew?: boolean; notes?: string | null;
+        };
+        Relationships: [];
+      };
+      edoscentreadmin_domains: {
+        Row: {
+          id: string; website_id: string; domain_name: string; registrar: string | null;
+          registered_date: string | null; expiry_date: string; auto_renew: boolean;
+          nameservers: string | null; cost: number | null; currency: string; status: string;
+          notes: string | null; created_at: string; updated_at: string;
+        };
+        Insert: {
+          id?: string; website_id: string; domain_name: string; registrar?: string | null;
+          registered_date?: string | null; expiry_date: string; auto_renew?: boolean;
+          nameservers?: string | null; cost?: number | null; currency?: string; status?: string;
+          notes?: string | null;
+        };
+        Update: {
+          id?: string; website_id?: string; domain_name?: string; registrar?: string | null;
+          registered_date?: string | null; expiry_date?: string; auto_renew?: boolean;
+          nameservers?: string | null; cost?: number | null; currency?: string; status?: string;
+          notes?: string | null;
+        };
+        Relationships: [];
+      };
+      edoscentreadmin_ssl_certificates: {
+        Row: {
+          id: string; website_id: string; domain_id: string | null; provider: string;
+          cert_type: string; issued_date: string | null; expiry_date: string;
+          auto_renew: boolean; cost: number | null; currency: string; status: string;
+          notes: string | null; created_at: string; updated_at: string;
+        };
+        Insert: {
+          id?: string; website_id: string; domain_id?: string | null; provider: string;
+          cert_type?: string; issued_date?: string | null; expiry_date: string;
+          auto_renew?: boolean; cost?: number | null; currency?: string; status?: string;
+          notes?: string | null;
+        };
+        Update: {
+          id?: string; website_id?: string; domain_id?: string | null; provider?: string;
+          cert_type?: string; issued_date?: string | null; expiry_date?: string;
+          auto_renew?: boolean; cost?: number | null; currency?: string; status?: string;
+          notes?: string | null;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       edoscentre_v_blog_posts_published: {
@@ -292,7 +520,9 @@ export interface Database {
         Relationships: [];
       };
     };
-    Functions: Record<string, never>;
+    Functions: {
+      edoscentreadmin_next_invoice_number: { Args: Record<string, never>; Returns: string };
+    };
     Enums: Record<string, never>;
   };
 }
@@ -311,3 +541,8 @@ export type Resource     = Database["public"]["Tables"]["edoscentre_resources"][
 export type PlatformLayer = Database["public"]["Tables"]["edoscentre_platform_layers"]["Row"];
 export type Technology   = Database["public"]["Tables"]["edoscentre_technologies"]["Row"];
 export type Faq          = Database["public"]["Tables"]["edoscentre_faqs"]["Row"];
+
+export type AdminWebsite   = Database["public"]["Tables"]["edoscentreadmin_websites"]["Row"];
+export type AdminUserRow   = Database["public"]["Tables"]["edoscentreadmin_admin_users"]["Row"];
+export type AdminRole      = "super_admin" | "website_admin" | "content_editor";
+export type WebsiteStatus  = "active" | "trial" | "pending" | "suspended" | "maintenance" | "expired" | "archived";
