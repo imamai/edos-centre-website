@@ -76,6 +76,8 @@ export type CaseStudyData = {
   result_summary: string | null;
   duration: string | null;
   project_year: string | null;
+  seo_title: string | null;
+  seo_description: string | null;
   industry: { id: string; name: string; slug: string; icon: string | null } | null;
   kpis: { id: string; metric_label: string; metric_value: string; metric_unit: string | null }[];
   technologies: { id: string; name: string }[];
@@ -102,6 +104,8 @@ function toCaseStudyData(cs: CaseStudyRow): CaseStudyData {
     result_summary: cs.result_summary,
     duration: cs.duration,
     project_year: cs.project_year,
+    seo_title: cs.seo_title,
+    seo_description: cs.seo_description,
     industry: cs.edoscentre_industries,
     kpis: [...cs.edoscentre_case_study_kpis]
       .sort((a, b) => a.sort_order - b.sort_order)

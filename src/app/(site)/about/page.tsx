@@ -3,10 +3,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Target, Eye, Heart } from "lucide-react";
 import { getTeamMembers } from "@/lib/queries";
+import { absoluteUrl } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "About Edos Centre",
-  description: "Learn about Edos Centre — our mission to embrace data for optimum solutions across East Africa.",
+  title: "About Edos Centre | Data & Digital Transformation Partner in Kenya",
+  description: "Learn about Edos Centre — our mission, leadership team and story building data, research and digital transformation systems across East Africa.",
+  alternates: { canonical: absoluteUrl("/about") },
 };
 
 const STATS = [

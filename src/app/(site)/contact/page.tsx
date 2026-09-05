@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { Mail, Phone, MapPin, Clock, MessageCircle } from "lucide-react";
 import ContactForm from "@/components/forms/ContactForm";
+import { absoluteUrl } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Contact Us",
-  description: "Get in touch with Edos Centre. We respond to all inquiries within 24 hours.",
+  title: "Contact Edos Centre | Data & Digital Transformation Partner in Kenya",
+  description: "Get in touch with Edos Centre for data analytics, engineering and digital transformation projects in Kenya. We respond to all inquiries within 24 hours.",
+  alternates: { canonical: absoluteUrl("/contact") },
 };
 
 export default function ContactPage() {

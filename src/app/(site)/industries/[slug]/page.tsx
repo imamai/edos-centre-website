@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { ArrowRight, ArrowLeft, CheckCircle2 } from "lucide-react";
 import { getIndustries, getIndustryBySlug } from "@/lib/queries";
 import { getIcon, getIndustryAccent } from "@/lib/icon-map";
+import { absoluteUrl } from "@/lib/seo";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 type Params = { slug: string };
 
@@ -17,8 +19,9 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const industry = await getIndustryBySlug(slug);
   if (!industry) return { title: "Industry Not Found" };
   return {
-    title: `${industry.name} Solutions — Edos Centre`,
-    description: industry.description ?? undefined,
+    title: industry.seo_title || `${industry.name} Solutions — Edos Centre`,
+    description: industry.seo_description || industry.description || undefined,
+    alternates: { canonical: absoluteUrl(`/industries/${industry.slug}`) },
   };
 }
 
@@ -44,6 +47,7 @@ export default async function IndustryDetailPage({ params }: { params: Promise<P
       <section className="pt-32 pb-20 bg-gradient-hero relative overflow-hidden">
         <div className="absolute inset-0 bg-grid opacity-30" />
         <div className="section-container relative">
+          <Breadcrumbs items={[{ name: "Industries", path: "/industries" }, { name: industry.name, path: `/industries/${industry.slug}` }]} />
           <Link
             href="/industries"
             className="inline-flex items-center gap-2 text-white/60 hover:text-white text-sm mb-8 transition-colors"

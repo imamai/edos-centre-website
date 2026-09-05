@@ -3,7 +3,7 @@ import { getAdminUser } from "@/lib/admin/auth";
 import ChangePasswordForm from "@/components/admin/ChangePasswordForm";
 import EdosLogoMark from "@/components/ui/EdosLogoMark";
 
-export const metadata = { title: "Change password — EDOS Control Centre" };
+export const metadata = { title: "Change password — EDOS Control Centre", robots: { index: false, follow: false } };
 
 export default async function ChangePasswordPage() {
   const adminUser = await getAdminUser();

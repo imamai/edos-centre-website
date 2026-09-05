@@ -3,10 +3,12 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { getIndustries } from "@/lib/queries";
 import { getIcon, getIndustryAccent } from "@/lib/icon-map";
+import { absoluteUrl } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Industry Solutions",
-  description: "Edos Centre delivers deep-domain digital transformation solutions for healthcare, NGOs, government, education, agriculture, finance and retail.",
+  title: "Industry Solutions | Healthcare, NGO, Government & Agriculture Data",
+  description: "Edos Centre delivers deep-domain digital transformation solutions for healthcare, NGOs, government, education, agriculture, finance and retail in Kenya.",
+  alternates: { canonical: absoluteUrl("/industries") },
 };
 
 export default async function IndustriesPage() {

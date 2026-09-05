@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { CheckCircle2, Clock, Calendar, Users } from "lucide-react";
 import ConsultationForm from "@/components/forms/ConsultationForm";
+import { absoluteUrl } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Book a Free Consultation",
-  description: "Schedule a free 45-minute strategy consultation with Edos Centre's data and digital transformation experts.",
+  title: "Book a Free Consultation | Edos Centre",
+  description: "Schedule a free 45-minute strategy consultation with Edos Centre's data analytics, engineering and digital transformation experts in Kenya.",
+  alternates: { canonical: absoluteUrl("/consultation") },
 };
 
 const WHAT_TO_EXPECT = [

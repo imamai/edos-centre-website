@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { ArrowRight, ArrowLeft } from "lucide-react";
 import { getCaseStudies, getCaseStudyBySlug } from "@/lib/queries";
 import { getIcon, getCaseStudyAccent } from "@/lib/icon-map";
+import { absoluteUrl } from "@/lib/seo";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 type Params = { slug: string };
 
@@ -17,8 +19,9 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const cs = await getCaseStudyBySlug(slug);
   if (!cs) return { title: "Case Study Not Found" };
   return {
-    title: `${cs.title} — Edos Centre Case Study`,
-    description: cs.tagline ?? undefined,
+    title: cs.seo_title || `${cs.title} — Edos Centre Case Study`,
+    description: cs.seo_description || cs.tagline || undefined,
+    alternates: { canonical: absoluteUrl(`/case-studies/${cs.slug}`) },
   };
 }
 
@@ -43,6 +46,7 @@ export default async function CaseStudyDetailPage({ params }: { params: Promise<
       <section className="pt-32 pb-20 bg-gradient-hero relative overflow-hidden">
         <div className="absolute inset-0 bg-grid opacity-30" />
         <div className="section-container relative">
+          <Breadcrumbs items={[{ name: "Case Studies", path: "/case-studies" }, { name: cs.title, path: `/case-studies/${cs.slug}` }]} />
           <Link
             href="/case-studies"
             className="inline-flex items-center gap-2 text-white/60 hover:text-white text-sm mb-8 transition-colors"

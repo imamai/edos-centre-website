@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { absoluteUrl } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Privacy Policy — Edos Centre",
   description: "Edos Centre privacy policy covering data collection, use, storage and your rights under the Kenya Data Protection Act 2019.",
+  alternates: { canonical: absoluteUrl("/privacy") },
 };
 
 const EFFECTIVE_DATE = "1 January 2025";

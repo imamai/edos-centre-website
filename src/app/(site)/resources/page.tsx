@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, BookOpen, FileText, Video, Download } from "lucide-react";
+import { absoluteUrl } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Resources — Guides, Whitepapers & Tools",
   description: "Free guides, whitepapers, checklists and tools from Edos Centre on data engineering, M&E systems, DHIS2 and digital transformation in East Africa.",
+  alternates: { canonical: absoluteUrl("/resources") },
 };
 
 const RESOURCE_TYPES = [

@@ -4,16 +4,17 @@ const supabaseOrigin = new URL(process.env.NEXT_PUBLIC_SUPABASE_URL ?? "https://
 const supabaseWsOrigin = supabaseOrigin.replace(/^https:/, "wss:");
 const isDev = process.env.NODE_ENV !== "production";
 
-// No third-party scripts/analytics run on this site, so a strict CSP is viable without
-// an allowlist growing out of control. 'unsafe-eval' is only added in development, where
-// Next's dev/HMR runtime needs it — production never gets it.
+// Google Analytics (GA4) is allowed in the CSP unconditionally so it works the moment
+// an admin sets a real ga_measurement_id in Site Settings — GoogleAnalytics.tsx only
+// injects the script when that ID is actually configured, so this allowance is inert
+// (no tracking, no request to Google) until then.
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+  `script-src 'self' 'unsafe-inline' https://www.googletagmanager.com${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
-  `img-src 'self' data: blob: ${supabaseOrigin}`,
+  `img-src 'self' data: blob: ${supabaseOrigin} https://www.google-analytics.com`,
   "font-src 'self' data:",
-  `connect-src 'self' ${supabaseOrigin} ${supabaseWsOrigin}`,
+  `connect-src 'self' ${supabaseOrigin} ${supabaseWsOrigin} https://www.google-analytics.com https://region1.google-analytics.com`,
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",

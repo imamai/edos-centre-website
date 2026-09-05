@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { LayoutDashboard, Globe, ScrollText, Users, Repeat, Receipt, Server, Bell, BarChart3, UserCog, LifeBuoy, Settings } from "lucide-react";
+import { LayoutDashboard, Globe, ScrollText, Users, Repeat, Receipt, Server, Bell, BarChart3, Search, UserCog, LifeBuoy, Settings } from "lucide-react";
 
 export interface NavItem {
   label: string;
@@ -16,6 +16,7 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Invoices", href: "/admin/invoices", icon: Receipt },
   { label: "Hosting & Domains", href: "/admin/hosting", icon: Server },
   { label: "Reports", href: "/admin/reports", icon: BarChart3 },
+  { label: "SEO", href: "/admin/seo", icon: Search },
   { label: "Notifications", href: "/admin/notifications", icon: Bell },
   { label: "Activity Logs", href: "/admin/activity-logs", icon: ScrollText },
   { label: "Admin Users", href: "/admin/admin-users", icon: UserCog, superAdminOnly: true },

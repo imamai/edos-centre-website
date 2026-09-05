@@ -3,7 +3,7 @@ import { getPortalUser } from "@/lib/portal/auth";
 import PortalLoginForm from "@/components/portal/PortalLoginForm";
 import EdosLogoMark from "@/components/ui/EdosLogoMark";
 
-export const metadata = { title: "Sign in — EDOS Client Portal" };
+export const metadata = { title: "Sign in — EDOS Client Portal", robots: { index: false, follow: false } };
 
 export default async function PortalLoginPage() {
   const portalUser = await getPortalUser();

@@ -3,10 +3,12 @@ import Link from "next/link";
 import { Clock, BookOpen } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 import { getBlogPosts } from "@/lib/queries";
+import { absoluteUrl } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Blog – Insights & Thought Leadership",
+  title: "Blog | Data Engineering, M&E & Analytics Insights",
   description: "Practical insights on data engineering, M&E systems, analytics, SaaS development and digital transformation in East Africa.",
+  alternates: { canonical: absoluteUrl("/blog") },
 };
 
 export default async function BlogPage() {

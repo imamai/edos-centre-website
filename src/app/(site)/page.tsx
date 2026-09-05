@@ -8,7 +8,13 @@ import MetricsSection      from "@/components/sections/MetricsSection";
 import TestimonialsSection from "@/components/sections/TestimonialsSection";
 import ThoughtLeadership   from "@/components/sections/ThoughtLeadership";
 import CtaSection          from "@/components/sections/CtaSection";
+import type { Metadata } from "next";
 import { getMetrics, getPlatformLayers, getCaseStudies, getTestimonials, getBlogPosts } from "@/lib/queries";
+import { absoluteUrl } from "@/lib/seo";
+
+export const metadata: Metadata = {
+  alternates: { canonical: absoluteUrl("/") },
+};
 
 export default async function HomePage() {
   const [metrics, platformLayers, caseStudies, testimonials, blogPosts] = await Promise.all([

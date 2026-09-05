@@ -3,10 +3,12 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { getServices } from "@/lib/queries";
 import { getIcon, getServiceAccent } from "@/lib/icon-map";
+import { absoluteUrl } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Solutions & Services",
-  description: "Explore Edos Centre's full suite of data analytics, data engineering, SaaS development, and digital transformation services.",
+  title: "Data Analytics, Engineering & SaaS Development Services in Kenya",
+  description: "Explore Edos Centre's full suite of data analytics, data engineering, SaaS development, and digital transformation services for organizations in Kenya.",
+  alternates: { canonical: absoluteUrl("/services") },
 };
 
 export default async function ServicesPage() {

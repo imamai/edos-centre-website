@@ -3,10 +3,12 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { getCaseStudies } from "@/lib/queries";
 import { getCaseStudyAccent } from "@/lib/icon-map";
+import { absoluteUrl } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Case Studies",
+  title: "Case Studies | Real Data & Digital Transformation Projects in Kenya",
   description: "Real-world project outcomes from Edos Centre — health systems, NGO M&E platforms, county dashboards, agricultural data systems and enterprise SaaS.",
+  alternates: { canonical: absoluteUrl("/case-studies") },
 };
 
 export default async function CaseStudiesPage() {

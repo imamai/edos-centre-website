@@ -6,6 +6,9 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { formatDate } from "@/lib/utils";
 import { getBlogPosts, getBlogPostBySlug } from "@/lib/queries";
+import { absoluteUrl, articleJsonLd } from "@/lib/seo";
+import JsonLd from "@/components/JsonLd";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 type Params = { slug: string };
 
@@ -21,6 +24,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   return {
     title: post.seo_title || `${post.title} — Edos Centre Blog`,
     description: post.seo_description || post.excerpt || undefined,
+    alternates: { canonical: absoluteUrl(`/blog/${post.slug}`) },
   };
 }
 
@@ -39,10 +43,22 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
 
   return (
     <>
+      <JsonLd
+        data={articleJsonLd({
+          title: post.title,
+          description: post.excerpt,
+          authorName: post.author_name,
+          publishedAt: post.published_at,
+          updatedAt: post.updated_at,
+          path: `/blog/${post.slug}`,
+        })}
+      />
+
       {/* Hero */}
       <section className="pt-32 pb-16 bg-gradient-hero relative overflow-hidden">
         <div className="absolute inset-0 bg-grid opacity-30" />
         <div className="section-container relative max-w-3xl">
+          <Breadcrumbs items={[{ name: "Blog", path: "/blog" }, { name: post.title, path: `/blog/${post.slug}` }]} />
           <Link
             href="/blog"
             className="inline-flex items-center gap-2 text-white/60 hover:text-white text-sm mb-8 transition-colors"

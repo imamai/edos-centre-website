@@ -4,6 +4,9 @@ import { notFound } from "next/navigation";
 import { ArrowRight, CheckCircle2, ArrowLeft } from "lucide-react";
 import { getServices, getServiceBySlug } from "@/lib/queries";
 import { getIcon, getServiceAccent } from "@/lib/icon-map";
+import { absoluteUrl, serviceJsonLd } from "@/lib/seo";
+import JsonLd from "@/components/JsonLd";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 type Params = { slug: string };
 
@@ -17,8 +20,9 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const service = await getServiceBySlug(slug);
   if (!service) return { title: "Service Not Found" };
   return {
-    title: `${service.title} — Edos Centre`,
-    description: service.description ?? undefined,
+    title: service.seo_title || `${service.title} — Edos Centre`,
+    description: service.seo_description || service.description || undefined,
+    alternates: { canonical: absoluteUrl(`/services/${service.slug}`) },
   };
 }
 
@@ -42,10 +46,15 @@ export default async function ServiceDetailPage({ params }: { params: Promise<Pa
 
   return (
     <>
+      <JsonLd
+        data={serviceJsonLd({ name: service.title, description: service.description, path: `/services/${service.slug}` })}
+      />
+
       {/* Hero */}
       <section className="pt-32 pb-20 bg-gradient-hero relative overflow-hidden">
         <div className="absolute inset-0 bg-grid opacity-30" />
         <div className="section-container relative">
+          <Breadcrumbs items={[{ name: "Solutions", path: "/services" }, { name: service.title, path: `/services/${service.slug}` }]} />
           <Link
             href="/services"
             className="inline-flex items-center gap-2 text-white/60 hover:text-white text-sm mb-8 transition-colors"

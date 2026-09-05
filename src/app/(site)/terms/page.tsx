@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { absoluteUrl } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Terms of Service — Edos Centre",
   description: "Terms and conditions governing use of Edos Centre's website and professional services.",
+  alternates: { canonical: absoluteUrl("/terms") },
 };
 
 const EFFECTIVE_DATE = "1 January 2025";

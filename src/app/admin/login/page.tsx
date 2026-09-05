@@ -3,7 +3,7 @@ import { getAdminUser } from "@/lib/admin/auth";
 import LoginForm from "@/components/admin/LoginForm";
 import EdosLogoMark from "@/components/ui/EdosLogoMark";
 
-export const metadata = { title: "Sign in — EDOS Control Centre" };
+export const metadata = { title: "Sign in — EDOS Control Centre", robots: { index: false, follow: false } };
 
 export default async function AdminLoginPage() {
   const adminUser = await getAdminUser();

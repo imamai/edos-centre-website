@@ -2,6 +2,9 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { getSiteSettings } from "@/lib/queries";
+import { organizationJsonLd, websiteJsonLd, SITE_URL } from "@/lib/seo";
+import JsonLd from "@/components/JsonLd";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
 
 const inter = Inter({
   subsets:  ["latin"],
@@ -37,13 +40,13 @@ export async function generateMetadata(): Promise<Metadata> {
       "health informatics", "Power BI consultant Kenya", "ODK KoboToolbox",
       "NGO M&E platform",
     ],
-    authors: [{ name: "Edos Centre", url: "https://edoscentre.co.ke" }],
+    authors: [{ name: "Edos Centre", url: SITE_URL }],
     creator: "Edos Centre",
-    metadataBase: new URL("https://edoscentre.co.ke"),
+    metadataBase: new URL(SITE_URL),
     openGraph: {
       type:        "website",
       locale:      "en_US",
-      url:         "https://edoscentre.co.ke",
+      url:         SITE_URL,
       siteName:    "Edos Centre",
       title,
       description,
@@ -83,10 +86,17 @@ export const viewport: Viewport = {
   colorScheme: "light dark",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const settings = await getSiteSettings();
+
   return (
     <html lang="en" className={`${inter.variable} ${plusJakarta.variable}`}>
-      <body>{children}</body>
+      <body>
+        <GoogleAnalytics measurementId={settings.ga_measurement_id} />
+        <JsonLd data={organizationJsonLd(settings)} />
+        <JsonLd data={websiteJsonLd()} />
+        {children}
+      </body>
     </html>
   );
 }

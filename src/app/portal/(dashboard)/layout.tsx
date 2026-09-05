@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getPortalUser } from "@/lib/portal/auth";
 import PortalShell from "@/components/portal/PortalShell";
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 export default async function PortalDashboardLayout({ children }: { children: React.ReactNode }) {
   const portalUser = await getPortalUser();
