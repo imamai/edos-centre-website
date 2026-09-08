@@ -1,5 +1,5 @@
 import "server-only";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/utils";
 import type { Database } from "@/types/database.types";
 
@@ -236,6 +236,23 @@ export async function getInvoices(): Promise<InvoiceWithRelations[]> {
     .select("*, edoscentreadmin_clients(company_name), edoscentreadmin_websites(name)")
     .order("issue_date", { ascending: false });
   return (data ?? []) as unknown as InvoiceWithRelations[];
+}
+
+export type InvoiceForDocument = Database["public"]["Tables"]["edoscentreadmin_invoices"]["Row"] & {
+  edoscentreadmin_clients: Database["public"]["Tables"]["edoscentreadmin_clients"]["Row"] | null;
+  edoscentreadmin_websites: { name: string } | null;
+};
+
+/** Full invoice + client contact details needed to render the printable/emailable
+ * invoice document — getInvoices() above only joins company_name for the list view. */
+export async function getInvoiceForDocument(id: string): Promise<InvoiceForDocument | null> {
+  const supabase = await createServiceClient();
+  const { data } = await supabase
+    .from("edoscentreadmin_invoices")
+    .select("*, edoscentreadmin_clients(*), edoscentreadmin_websites(name)")
+    .eq("id", id)
+    .maybeSingle();
+  return data as unknown as InvoiceForDocument | null;
 }
 
 export type PaymentWithRelations = Database["public"]["Tables"]["edoscentreadmin_payments"]["Row"] & {

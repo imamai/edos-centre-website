@@ -420,19 +420,23 @@ export interface Database {
           id: string; invoice_number: string; client_id: string; website_id: string | null;
           subscription_id: string | null; issue_date: string; due_date: string;
           amount: number; tax: number; discount: number; total: number; currency: string;
-          status: string; notes: string | null; created_at: string; updated_at: string;
+          status: string; notes: string | null;
+          reminder_sent_at: string | null; overdue_notice_sent_at: string | null;
+          created_at: string; updated_at: string;
         };
         Insert: {
           id?: string; invoice_number: string; client_id: string; website_id?: string | null;
           subscription_id?: string | null; issue_date?: string; due_date: string;
           amount: number; tax?: number; discount?: number; total: number; currency?: string;
           status?: string; notes?: string | null;
+          reminder_sent_at?: string | null; overdue_notice_sent_at?: string | null;
         };
         Update: {
           id?: string; invoice_number?: string; client_id?: string; website_id?: string | null;
           subscription_id?: string | null; issue_date?: string; due_date?: string;
           amount?: number; tax?: number; discount?: number; total?: number; currency?: string;
           status?: string; notes?: string | null;
+          reminder_sent_at?: string | null; overdue_notice_sent_at?: string | null;
         };
         Relationships: [];
       };

@@ -1,6 +1,9 @@
 import "server-only";
 import { createServiceClient } from "@/lib/supabase/server";
 import { logAudit } from "@/lib/admin/audit";
+import { sendInvoiceStatusEmail } from "@/lib/admin/invoice-email";
+
+const REMINDER_DAYS_BEFORE_DUE = 3;
 
 type NotificationInsert = {
   recipient_id: string;
@@ -55,11 +58,15 @@ function expiryBucket(daysLeft: number): "expired" | "expiring_7" | "expiring_30
 
 /**
  * Sweeps subscription/invoice lifecycle dates, expiring domains and SSL certs, and
- * writes de-duplicated per-admin notifications. Never auto-suspends a website or
- * cancels anything — suspension stays a deliberate admin action; this only advances
- * the billing state machine (due_soon -> grace_period -> overdue) and flags invoices
- * past their due date, plus alerts on domain/SSL expiry. Safe to call repeatedly:
- * the dedup_key unique constraint means re-running never creates duplicate alerts.
+ * writes de-duplicated per-admin notifications. Also emails clients directly: one
+ * "due soon" reminder a few days before an invoice's due date, and one "overdue"
+ * notice the day it crosses it — each gated by its own *_sent_at column so re-running
+ * the sweep never re-sends either (unlike the admin notifications below, these have
+ * no dedup_key to fall back on, since they're one-shot rather than re-evaluated each
+ * run). Never auto-suspends a website or cancels anything — suspension stays a
+ * deliberate admin action; this only advances the billing state machine
+ * (due_soon -> grace_period -> overdue) and flags invoices past their due date, plus
+ * alerts on domain/SSL expiry. Safe to call repeatedly.
  */
 export async function runAutomationSweep() {
   const supabase = await createServiceClient();
@@ -113,6 +120,31 @@ export async function runAutomationSweep() {
     }
   }
 
+  // Reminder emails: one "due soon" notice a few days before due_date, and one
+  // "overdue" notice exactly when an invoice crosses its due date. reminder_sent_at/
+  // overdue_notice_sent_at gate each so re-running the sweep never re-sends either.
+  const reminderCutoff = new Date(today);
+  reminderCutoff.setDate(reminderCutoff.getDate() + REMINDER_DAYS_BEFORE_DUE);
+  const reminderCutoffStr = reminderCutoff.toISOString().slice(0, 10);
+
+  const { data: dueSoonInvoices } = await supabase
+    .from("edoscentreadmin_invoices")
+    .select("id, invoice_number, due_date, edoscentreadmin_clients(company_name)")
+    .in("status", ["sent", "pending"])
+    .is("reminder_sent_at", null)
+    .gte("due_date", todayStr)
+    .lte("due_date", reminderCutoffStr);
+
+  let remindersSent = 0;
+  for (const inv of (dueSoonInvoices ?? []) as unknown as InvoiceRow[]) {
+    const result = await sendInvoiceStatusEmail(inv.id, "reminder_due_soon");
+    await supabase.from("edoscentreadmin_invoices").update({ reminder_sent_at: today.toISOString() }).eq("id", inv.id);
+    if (result.sent) {
+      remindersSent++;
+      await logAudit({ actorId: null, action: "invoice_reminder_emailed", metadata: { invoice_id: inv.id, kind: "due_soon" } });
+    }
+  }
+
   const { data: invoices } = await supabase
     .from("edoscentreadmin_invoices")
     .select("id, invoice_number, due_date, edoscentreadmin_clients(company_name)")
@@ -133,6 +165,12 @@ export async function runAutomationSweep() {
         link: "/admin/invoices",
         dedup_key: `invoice:${inv.id}:overdue`,
       });
+    }
+    const result = await sendInvoiceStatusEmail(inv.id, "reminder_overdue");
+    await supabase.from("edoscentreadmin_invoices").update({ overdue_notice_sent_at: today.toISOString() }).eq("id", inv.id);
+    if (result.sent) {
+      remindersSent++;
+      await logAudit({ actorId: null, action: "invoice_reminder_emailed", metadata: { invoice_id: inv.id, kind: "overdue" } });
     }
     await logAudit({ actorId: null, action: "invoice_auto_overdue", metadata: { invoice_id: inv.id } });
   }
@@ -191,5 +229,5 @@ export async function runAutomationSweep() {
     notificationsCreated = data?.length ?? 0;
   }
 
-  return { subscriptionsUpdated, invoicesUpdated, notificationsCreated, checkedAt: today.toISOString() };
+  return { subscriptionsUpdated, invoicesUpdated, remindersSent, notificationsCreated, checkedAt: today.toISOString() };
 }

@@ -26,7 +26,7 @@ export default function AdminShell({
       <Toaster richColors position="top-right" />
 
       {/* Desktop sidebar */}
-      <div className="hidden lg:block">
+      <div className="hidden lg:block print:hidden">
         <Sidebar unreadCount={unreadCount} isSuperAdmin={isSuperAdmin} />
       </div>
 
@@ -45,7 +45,7 @@ export default function AdminShell({
       </Dialog.Root>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 lg:px-8">
+        <header className="print:hidden flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 lg:px-8">
           <button
             type="button"
             onClick={() => setMobileOpen(true)}

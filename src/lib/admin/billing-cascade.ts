@@ -2,6 +2,7 @@ import "server-only";
 import { revalidatePath } from "next/cache";
 import { logAudit } from "@/lib/admin/audit";
 import { createServiceClient } from "@/lib/supabase/server";
+import { sendInvoiceStatusEmail } from "@/lib/admin/invoice-email";
 
 const CYCLE_MONTHS: Record<string, number> = { monthly: 1, quarterly: 3, semiannual: 6, annual: 12, custom: 1 };
 
@@ -63,6 +64,14 @@ export async function applyPaymentCascade(params: {
 
   const newInvoiceStatus = totalPaid >= Number(invoice.total) ? "paid" : totalPaid > 0 ? "partially_paid" : "pending";
   await supabase.from("edoscentreadmin_invoices").update({ status: newInvoiceStatus }).eq("id", invoice.id);
+
+  if (newInvoiceStatus === "paid") {
+    // Best-effort: a missing RESEND config or client email must not break payment
+    // recording (this runs from both the admin form and the M-Pesa webhook).
+    sendInvoiceStatusEmail(invoice.id, "payment_received", { paidOn: params.paymentDate }).catch((err) =>
+      console.error("[billing-cascade] payment-received email failed:", err),
+    );
+  }
 
   if (newInvoiceStatus === "paid" && invoice.subscription_id) {
     const { data: subscription } = await supabase

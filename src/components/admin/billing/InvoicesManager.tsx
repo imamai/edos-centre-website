@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { toast } from "sonner";
-import { Wallet, Smartphone, RefreshCw } from "lucide-react";
+import { Wallet, Smartphone, RefreshCw, FileText, Mail } from "lucide-react";
 import EntityManager from "@/components/admin/cms/EntityManager";
 import { StatusBadge } from "@/components/admin/ui/Badge";
 import { Input, Textarea, Label, Select } from "@/components/admin/ui/Input";
@@ -12,6 +13,7 @@ import { Drawer } from "@/components/admin/ui/Drawer";
 import { Card } from "@/components/admin/ui/Card";
 import { upsertInvoice, deleteInvoice, recordPayment } from "@/lib/admin/actions/invoice-actions";
 import { initiateMpesaPayment, checkMpesaTransactionStatus } from "@/lib/admin/actions/mpesa-actions";
+import { sendInvoiceEmail } from "@/lib/admin/actions/invoice-email-actions";
 import { formatDate } from "@/lib/utils";
 import type { Database } from "@/types/database.types";
 import type { InvoiceWithRelations, PaymentWithRelations } from "@/lib/admin/queries";
@@ -44,6 +46,19 @@ export default function InvoicesManager({
   const [mpesaInvoice, setMpesaInvoice] = useState<InvoiceWithRelations | null>(null);
   const [pending, setPending] = useState(false);
   const [checkingId, setCheckingId] = useState<string | null>(null);
+  const [emailingId, setEmailingId] = useState<string | null>(null);
+
+  async function onEmailInvoice(invoiceId: string) {
+    setEmailingId(invoiceId);
+    try {
+      await sendInvoiceEmail(invoiceId);
+      toast.success("Invoice emailed to the client.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Unable to email invoice.");
+    } finally {
+      setEmailingId(null);
+    }
+  }
 
   async function onRecordPayment(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -113,23 +128,50 @@ export default function InvoicesManager({
           { header: "Status", render: (i) => <StatusBadge status={i.status} /> },
           {
             header: "",
-            render: (i) =>
-              i.status !== "paid" && i.status !== "cancelled" ? (
-                <div className="flex justify-end gap-1.5">
-                  <button
-                    onClick={() => setMpesaInvoice(i)}
-                    className="flex items-center gap-1 rounded-lg border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50"
-                  >
-                    <Smartphone className="h-3.5 w-3.5" /> M-Pesa
-                  </button>
-                  <button
-                    onClick={() => setPaymentInvoice(i)}
-                    className="flex items-center gap-1 rounded-lg border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50"
-                  >
-                    <Wallet className="h-3.5 w-3.5" /> Record payment
-                  </button>
-                </div>
-              ) : null,
+            render: (i) => (
+              <div className="flex justify-end gap-1.5">
+                <Link
+                  href={`/admin/invoices/${i.id}/print`}
+                  target="_blank"
+                  onClick={(e) => e.stopPropagation()}
+                  className="flex items-center gap-1 rounded-lg border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50"
+                >
+                  <FileText className="h-3.5 w-3.5" /> View / PDF
+                </Link>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEmailInvoice(i.id);
+                  }}
+                  disabled={emailingId === i.id}
+                  className="flex items-center gap-1 rounded-lg border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50"
+                >
+                  <Mail className="h-3.5 w-3.5" /> {emailingId === i.id ? "Sending…" : "Email"}
+                </button>
+                {i.status !== "paid" && i.status !== "cancelled" && (
+                  <>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setMpesaInvoice(i);
+                      }}
+                      className="flex items-center gap-1 rounded-lg border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50"
+                    >
+                      <Smartphone className="h-3.5 w-3.5" /> M-Pesa
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setPaymentInvoice(i);
+                      }}
+                      className="flex items-center gap-1 rounded-lg border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50"
+                    >
+                      <Wallet className="h-3.5 w-3.5" /> Record payment
+                    </button>
+                  </>
+                )}
+              </div>
+            ),
           },
         ]}
         renderFields={(editing) => (
