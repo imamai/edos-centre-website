@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Mail, Phone, MapPin, Clock, MessageCircle } from "lucide-react";
 import ContactForm from "@/components/forms/ContactForm";
 import { absoluteUrl } from "@/lib/seo";
+import { getSiteSettings } from "@/lib/queries";
+import { socialUrl } from "@/lib/social";
 
 export const metadata: Metadata = {
   title: "Contact Edos Centre | Data & Digital Transformation Partner in Kenya",
@@ -9,7 +11,12 @@ export const metadata: Metadata = {
   alternates: { canonical: absoluteUrl("/contact") },
 };
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const settings = await getSiteSettings();
+  // Was hardcoded to linkedin.com/company/edoscentre, which quietly ignored
+  // whatever an admin set in Site Settings.
+  const linkedInUrl = socialUrl("linkedin", settings.linkedin_url);
+
   return (
     <>
       <section className="pt-32 pb-10 bg-gradient-hero relative overflow-hidden">
@@ -61,18 +68,21 @@ export default function ContactPage() {
                 </div>
               </div>
 
-              {/* Social */}
-              <div className="pt-6 border-t border-gray-200">
-                <p className="text-sm text-gray-500 mb-3">For quick responses, connect on LinkedIn:</p>
-                <a
-                  href="https://linkedin.com/company/edoscentre"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-sm font-medium text-brand-purple hover:text-brand-red transition-colors"
-                >
-                  Edos Centre on LinkedIn →
-                </a>
-              </div>
+              {/* Social. Hidden entirely when no LinkedIn is configured --
+                  better than a link to a profile that may not exist. */}
+              {linkedInUrl && (
+                <div className="pt-6 border-t border-gray-200">
+                  <p className="text-sm text-gray-500 mb-3">For quick responses, connect on LinkedIn:</p>
+                  <a
+                    href={linkedInUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-sm font-medium text-brand-purple hover:text-brand-red transition-colors"
+                  >
+                    Edos Centre on LinkedIn →
+                  </a>
+                </div>
+              )}
             </div>
 
             {/* Right: form */}

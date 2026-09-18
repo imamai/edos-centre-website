@@ -2,6 +2,8 @@
 // SITE_URL falls back to the real production domain so canonical/OG URLs are
 // never wrong if NEXT_PUBLIC_SITE_URL isn't set in a given environment — but
 // production deploys should still set it explicitly (see .env.example).
+import { socialProfiles } from "@/lib/social";
+
 export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://edoscentre.co.ke").replace(/\/$/, "");
 
 export function absoluteUrl(path: string): string {
@@ -11,10 +13,10 @@ export function absoluteUrl(path: string): string {
 type SiteSettings = Record<string, string>;
 
 export function organizationJsonLd(settings: SiteSettings) {
-  const sameAs = [
-    settings.linkedin_url || null,
-    settings.twitter_handle ? `https://twitter.com/${settings.twitter_handle.replace(/^@/, "")}` : null,
-  ].filter((v): v is string => !!v);
+  // sameAs is how Google ties this site to the same organisation's profiles
+  // elsewhere, so every network the admin has filled in belongs here -- not
+  // just the two the footer originally knew about.
+  const sameAs = socialProfiles(settings).map((profile) => profile.url);
 
   return {
     "@context": "https://schema.org",

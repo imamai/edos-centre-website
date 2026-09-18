@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { Mail, Phone, MapPin, Linkedin, Twitter, Github } from "lucide-react";
+import { Mail, Phone, MapPin, Linkedin, Twitter, Github, Youtube, Facebook, Instagram, Music2 } from "lucide-react";
 import EdosLogoMark from "@/components/ui/EdosLogoMark";
 import NewsletterForm from "./NewsletterForm";
 import type { NavChild } from "@/lib/queries";
+import { socialLabel, socialProfiles, type SocialNetwork } from "@/lib/social";
 
 type FooterNav = {
   footerCompany: NavChild[];
@@ -71,14 +72,9 @@ export default function Footer({ nav, settings }: { nav: FooterNav; settings: Re
             </div>
 
             <div className="flex items-center gap-3 mt-6">
-              {settings.linkedin_url && <SocialLink href={settings.linkedin_url} icon={<Linkedin className="w-4 h-4" />} />}
-              {settings.twitter_handle && (
-                <SocialLink
-                  href={`https://twitter.com/${settings.twitter_handle.replace(/^@/, "")}`}
-                  icon={<Twitter className="w-4 h-4" />}
-                />
-              )}
-              {settings.github_url && <SocialLink href={settings.github_url} icon={<Github className="w-4 h-4" />} />}
+              {socialProfiles(settings).map(({ network, url }) => (
+                <SocialLink key={network} network={network} href={url} />
+              ))}
             </div>
           </div>
 
@@ -124,15 +120,32 @@ function FooterCol({ title, links }: { title: string; links: NavChild[] }) {
   );
 }
 
-function SocialLink({ href, icon }: { href: string; icon: React.ReactNode }) {
+const SOCIAL_ICONS: Record<SocialNetwork, React.ComponentType<{ className?: string }>> = {
+  linkedin: Linkedin,
+  twitter: Twitter,
+  facebook: Facebook,
+  instagram: Instagram,
+  youtube: Youtube,
+  // lucide ships no TikTok mark; Music2 is the closest honest stand-in.
+  tiktok: Music2,
+  github: Github,
+};
+
+/** An icon-only link, so it needs an accessible name: without one a screen
+ * reader announces nothing but "link", once per network. */
+function SocialLink({ network, href }: { network: SocialNetwork; href: string }) {
+  const Icon = SOCIAL_ICONS[network];
+  const label = `Edos Centre on ${socialLabel(network)}`;
   return (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
+      aria-label={label}
+      title={label}
       className="w-9 h-9 rounded-full border border-white/15 flex items-center justify-center text-white/50 hover:text-white hover:border-white/40 transition-all"
     >
-      {icon}
+      <Icon className="w-4 h-4" />
     </a>
   );
 }
